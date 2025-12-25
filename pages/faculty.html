@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Faculty Dashboard - CRMS</title>
+    <link rel="stylesheet" href="../css/main.css">
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="navbar-brand">🎓 CRMS - Faculty Portal</div>
+        <div class="nav-user">
+            <span id="userName">Faculty</span>
+            <a href="change-password.html" class="btn btn-sm btn-secondary">Change Password</a>
+            <button class="btn btn-sm btn-danger" onclick="Auth.logout()">Logout</button>
+        </div>
+    </nav>
+
+    <div class="main-content full-width">
+        <div class="page-header">
+            <h1>Faculty Dashboard</h1>
+            <p>Welcome back! View student performance and analytics</p>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="dashboard-grid" id="statsGrid"></div>
+
+        <!-- Quick Actions -->
+        <div class="grid-4 mb-3">
+            <div class="card" style="cursor:pointer" onclick="showSection('all-students')">
+                <div class="card-body text-center">
+                    <div style="font-size:2.5rem;margin-bottom:0.5rem">👥</div>
+                    <h4>All Students</h4>
+                    <p class="text-muted" style="margin:0">View all student details</p>
+                </div>
+            </div>
+            <div class="card" style="cursor:pointer" onclick="showSection('toppers')">
+                <div class="card-body text-center">
+                    <div style="font-size:2.5rem;margin-bottom:0.5rem">🏆</div>
+                    <h4>Top 20 Students</h4>
+                    <p class="text-muted" style="margin:0">Best performers</p>
+                </div>
+            </div>
+            <div class="card" style="cursor:pointer" onclick="showSection('poor')">
+                <div class="card-body text-center">
+                    <div style="font-size:2.5rem;margin-bottom:0.5rem">📉</div>
+                    <h4>Bottom 10</h4>
+                    <p class="text-muted" style="margin:0">Need attention</p>
+                </div>
+            </div>
+            <div class="card" style="cursor:pointer" onclick="showSection('backlogs')">
+                <div class="card-body text-center">
+                    <div style="font-size:2.5rem;margin-bottom:0.5rem">📋</div>
+                    <h4>Backlogs</h4>
+                    <p class="text-muted" style="margin:0">Subject & student wise</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content Sections -->
+        <div id="all-students" class="section" style="display:none">
+            <div class="table-container">
+                <div class="table-header">
+                    <h3>All Students</h3>
+                    <div class="search-box">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <circle cx="11" cy="11" r="8" />
+                            <path d="m21 21-4.35-4.35" />
+                        </svg>
+                        <input type="text" id="searchInput" placeholder="Search by name or regno..."
+                            oninput="filterStudents()">
+                    </div>
+                </div>
+                <div style="overflow-x:auto">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Regd. No</th>
+                                <th>Name</th>
+                                <th>Gender</th>
+                                <th>CGPA</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="allStudentsTable"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="toppers" class="section" style="display:none">
+            <div class="table-container">
+                <div class="table-header">
+                    <h3>🏆 Top 20 Students (by CGPA)</h3>
+                </div>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Regd. No</th>
+                            <th>Name</th>
+                            <th>CGPA</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="toppersTable"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="poor" class="section" style="display:none">
+            <div class="table-container">
+                <div class="table-header">
+                    <h3>📉 Bottom 10 Students (Need Attention)</h3>
+                </div>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Regd. No</th>
+                            <th>Name</th>
+                            <th>CGPA</th>
+                            <th>Backlogs</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="poorTable"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="backlogs" class="section" style="display:none">
+            <div class="tabs">
+                <div class="tab active" onclick="showBacklogTab('subject')">By Subject</div>
+                <div class="tab" onclick="showBacklogTab('student')">By Student</div>
+            </div>
+            <div id="backlog-subject" class="backlog-content">
+                <div class="table-container">
+                    <div class="table-header">
+                        <h3>Subject-wise Backlogs</h3>
+                    </div>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Subject</th>
+                                <th>Count</th>
+                                <th>Students</th>
+                            </tr>
+                        </thead>
+                        <tbody id="subjectBacklogTable"></tbody>
+                    </table>
+                </div>
+            </div>
+            <div id="backlog-student" class="backlog-content" style="display:none">
+                <div class="form-group" style="max-width:400px">
+                    <label class="form-label">Enter Registration Number</label>
+                    <input type="text" id="backlogRegno" class="form-control" placeholder="e.g., 23K61A4401">
+                    <button class="btn btn-primary mt-1" onclick="searchStudentBacklogs()">Search</button>
+                </div>
+                <div id="studentBacklogResult"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Student View Modal -->
+    <div class="modal-overlay" id="studentModal">
+        <div class="modal" style="max-width:800px">
+            <div class="modal-header">
+                <h3>Student Details</h3>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="studentModalContent"></div>
+        </div>
+    </div>
+
+    <script src="../js/students1.js"></script>
+    <script src="../js/students2.js"></script>
+    <script src="../js/data.js"></script>
+    <script src="../js/security.js"></script>
+    <script src="../js/auth.js"></script>
+    <script>
+        if (!Auth.requireAuth(['faculty', 'hod', 'admin'])) { throw new Error('Access denied'); }
+        initializeData();
+
+        const user = Auth.getCurrentUser();
+        document.getElementById('userName').textContent = user.name;
+
+        const students = getStudents().filter(s => s.name && s.name !== 'NaN');
+        const stats = getDepartmentStats();
+
+        // Populate stats
+        document.getElementById('statsGrid').innerHTML = `
+            <div class="stat-card"><div class="stat-icon primary">👥</div><div class="stat-content"><h3>${stats.total}</h3><p>Total Students</p></div></div>
+            <div class="stat-card"><div class="stat-icon success">🌟</div><div class="stat-content"><h3>${stats.excellent + stats.best}</h3><p>Excellent/Best (≥8)</p></div></div>
+            <div class="stat-card"><div class="stat-icon warning">📊</div><div class="stat-content"><h3>${stats.good + stats.average}</h3><p>Good/Average (6-8)</p></div></div>
+            <div class="stat-card"><div class="stat-icon danger">⚠️</div><div class="stat-content"><h3>${stats.withBacklogs}</h3><p>With Backlogs</p></div></div>
+        `;
+
+        let allStudentsData = students.map(s => ({ ...s, cgpa: parseFloat(calculateCGPA(s)) }));
+
+        function showSection(id) {
+            document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
+            document.getElementById(id).style.display = 'block';
+            if (id === 'all-students') loadAllStudents();
+            else if (id === 'toppers') loadToppers();
+            else if (id === 'poor') loadPoor();
+            else if (id === 'backlogs') loadBacklogs();
+        }
+
+        function loadAllStudents() {
+            renderStudentTable(allStudentsData, 'allStudentsTable');
+        }
+
+        function filterStudents() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = allStudentsData.filter(s => s.name.toLowerCase().includes(query) || s.regno.toLowerCase().includes(query));
+            renderStudentTable(filtered, 'allStudentsTable');
+        }
+
+        function renderStudentTable(data, tableId) {
+            const tbody = document.getElementById(tableId);
+            tbody.innerHTML = data.map(s => {
+                const perf = getPerformanceStatus(s.cgpa);
+                return `<tr>
+                    <td>${s.regno}</td>
+                    <td>${s.name}</td>
+                    <td>${s.gender}</td>
+                    <td><strong>${s.cgpa.toFixed(2)}</strong></td>
+                    <td><span class="badge ${perf.class}" style="background:none">${perf.text}</span></td>
+                    <td><button class="btn btn-sm btn-primary" onclick="viewStudent('${s.regno}')">View</button></td>
+                </tr>`;
+            }).join('');
+        }
+
+        function loadToppers() {
+            const toppers = getToppers();
+            document.getElementById('toppersTable').innerHTML = toppers.map((s, i) => `
+                <tr>
+                    <td><span class="badge badge-success">#${i + 1}</span></td>
+                    <td>${s.regno}</td>
+                    <td>${s.name}</td>
+                    <td><strong>${s.cgpa.toFixed(2)}</strong></td>
+                    <td><button class="btn btn-sm btn-primary" onclick="viewStudent('${s.regno}')">View</button></td>
+                </tr>
+            `).join('');
+        }
+
+        function loadPoor() {
+            const poor = getPoorPerformers();
+            document.getElementById('poorTable').innerHTML = poor.map(s => {
+                const backlogs = getBacklogsByStudent(s.regno);
+                return `<tr>
+                    <td>${s.regno}</td>
+                    <td>${s.name}</td>
+                    <td><strong class="text-danger">${s.cgpa.toFixed(2)}</strong></td>
+                    <td><span class="badge badge-danger">${backlogs.length} subjects</span></td>
+                    <td><button class="btn btn-sm btn-primary" onclick="viewStudent('${s.regno}')">View</button></td>
+                </tr>`;
+            }).join('');
+        }
+
+        function loadBacklogs() {
+            const backlogs = getBacklogsBySubject();
+            document.getElementById('subjectBacklogTable').innerHTML = Object.entries(backlogs).map(([subj, regnos]) => `
+                <tr>
+                    <td><strong>${CRMS_DATA.subjectNames[subj] || subj}</strong></td>
+                    <td><span class="badge badge-danger">${regnos.length}</span></td>
+                    <td style="font-size:0.875rem">${regnos.join(', ')}</td>
+                </tr>
+            `).join('') || '<tr><td colspan="3" class="text-center text-muted">No backlogs found</td></tr>';
+        }
+
+        function showBacklogTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            document.querySelectorAll('.backlog-content').forEach(c => c.style.display = 'none');
+            document.getElementById('backlog-' + tab).style.display = 'block';
+        }
+
+        function searchStudentBacklogs() {
+            const regno = document.getElementById('backlogRegno').value.trim();
+            const backlogs = getBacklogsByStudent(regno);
+            const student = getStudentByRegno(regno);
+
+            if (!student) {
+                document.getElementById('studentBacklogResult').innerHTML = '<div class="alert alert-danger">Student not found</div>';
+                return;
+            }
+
+            if (backlogs.length === 0) {
+                document.getElementById('studentBacklogResult').innerHTML = `<div class="alert alert-success">${student.name} has no backlogs!</div>`;
+                return;
+            }
+
+            document.getElementById('studentBacklogResult').innerHTML = `
+                <div class="card mt-2">
+                    <div class="card-header"><h4>${student.name} (${regno})</h4></div>
+                    <div class="card-body">
+                        <p><strong>Total Backlogs:</strong> <span class="badge badge-danger">${backlogs.length}</span></p>
+                        <table class="table">
+                            <thead><tr><th>Semester</th><th>Subject</th></tr></thead>
+                            <tbody>${backlogs.map(b => `<tr><td>${b.semester.toUpperCase()}</td><td>${CRMS_DATA.subjectNames[b.subject] || b.subject}</td></tr>`).join('')}</tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+        }
+
+        function viewStudent(regno) {
+            const student = getStudentByRegno(regno);
+            const cgpa = parseFloat(calculateCGPA(student));
+            const perf = getPerformanceStatus(cgpa);
+
+            let html = `
+                <div class="flex gap-2 mb-2">
+                    <div class="faculty-avatar" style="width:60px;height:60px">${student.name.charAt(0)}</div>
+                    <div>
+                        <h3 style="margin:0">${student.name}</h3>
+                        <p class="text-muted" style="margin:0">${student.regno} • ${student.gender === 'F' ? 'Female' : 'Male'}</p>
+                        <span class="performance-badge ${perf.class}" style="margin-top:0.5rem;display:inline-block">CGPA: ${cgpa.toFixed(2)} - ${perf.text}</span>
+                    </div>
+                </div>
+                <hr style="margin:1rem 0">
+                <h4>Semester Results</h4>`;
+
+            const semNames = { sem1: 'Semester 1', sem2: 'Semester 2', sem3: 'Semester 3', sem4: 'Semester 4' };
+
+            Object.entries(student.semesters || {}).forEach(([key, sem]) => {
+                html += `<div class="card mb-1"><div class="card-body">
+                    <strong>${semNames[key] || key}</strong> - 
+                    <span class="badge badge-${sem.status === 'PASS' ? 'success' : 'danger'}">${sem.status}</span>
+                    SGPA: <strong>${sem.sgpa && !isNaN(sem.sgpa) ? sem.sgpa.toFixed(2) : 'N/A'}</strong>
+                </div></div>`;
+            });
+
+            document.getElementById('studentModalContent').innerHTML = html;
+            document.getElementById('studentModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('studentModal').classList.remove('active');
+        }
+
+        document.getElementById('studentModal').addEventListener('click', function (e) {
+            if (e.target === this) closeModal();
+        });
+
+        // Show all students by default
+        showSection('all-students');
+    </script>
+</body>
+
+</html>

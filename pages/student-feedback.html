@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Faculty Feedback - CRMS</title>
+    <link rel="stylesheet" href="../css/main.css">
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="navbar-brand">🎓 CRMS - Faculty Feedback</div>
+        <div class="nav-user">
+            <a href="student.html" class="btn btn-sm btn-secondary">← Back to Dashboard</a>
+        </div>
+    </nav>
+
+    <div class="main-content full-width">
+        <div class="page-header">
+            <h1>Faculty Feedback</h1>
+            <p>Rate your faculty members and provide suggestions (Max 150 characters)</p>
+        </div>
+
+        <div id="alertBox" class="alert" style="display:none"></div>
+
+        <form id="feedbackForm">
+            <div id="facultyList"></div>
+
+            <div class="text-center mt-3">
+                <button type="submit" class="btn btn-success btn-lg">
+                    ✅ Submit Feedback
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <script src="../js/students1.js"></script>
+    <script src="../js/students2.js"></script>
+    <script src="../js/data.js"></script>
+    <script src="../js/security.js"></script>
+    <script src="../js/auth.js"></script>
+    <script>
+        if (!Auth.requireAuth('student')) { throw new Error('Access denied'); }
+        initializeData();
+
+        const user = Auth.getCurrentUser();
+        const faculty = getFaculty();
+        const ratings = ['excellent', 'good', 'average', 'below_average', 'poor'];
+        const ratingLabels = { excellent: 'Excellent', good: 'Good', average: 'Average', below_average: 'Below Avg', poor: 'Poor' };
+
+        const container = document.getElementById('facultyList');
+
+        faculty.forEach(f => {
+            const card = document.createElement('div');
+            card.className = 'card mb-2';
+            card.innerHTML = `
+                <div class="card-body">
+                    <div class="flex items-center gap-2 mb-2">
+                        <div class="faculty-avatar" style="width:50px;height:50px;font-size:1.25rem">${f.name.charAt(0)}</div>
+                        <div>
+                            <h4 style="margin:0">${f.name}</h4>
+                            <p class="text-muted" style="margin:0;font-size:0.875rem">${f.subject}</p>
+                        </div>
+                    </div>
+                    <div class="rating-group" id="rating-${f.id}">
+                        ${ratings.map(r => `<button type="button" class="rating-btn" data-faculty="${f.id}" data-rating="${r}">${ratingLabels[r]}</button>`).join('')}
+                    </div>
+                    <div class="mt-2">
+                        <textarea class="suggestion-box" id="suggestion-${f.id}" placeholder="Enter your suggestion (optional, max 150 characters)" maxlength="150"></textarea>
+                        <div class="char-count"><span id="count-${f.id}">0</span>/150</div>
+                    </div>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+
+        // Rating button handlers
+        document.querySelectorAll('.rating-btn').forEach(btn => {
+            btn.addEventListener('click', function () {
+                const facultyId = this.dataset.faculty;
+                document.querySelectorAll(`[data-faculty="${facultyId}"]`).forEach(b => b.classList.remove('selected'));
+                this.classList.add('selected');
+            });
+        });
+
+        // Character count
+        document.querySelectorAll('.suggestion-box').forEach(box => {
+            box.addEventListener('input', function () {
+                const id = this.id.replace('suggestion-', '');
+                document.getElementById('count-' + id).textContent = this.value.length;
+            });
+        });
+
+        function showAlert(msg, type) {
+            const box = document.getElementById('alertBox');
+            box.className = 'alert alert-' + type;
+            box.innerHTML = msg;
+            box.style.display = 'flex';
+            window.scrollTo(0, 0);
+        }
+
+        document.getElementById('feedbackForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const feedbacks = getFeedback();
+            let submitted = 0;
+
+            faculty.forEach(f => {
+                const selected = document.querySelector(`[data-faculty="${f.id}"].selected`);
+                if (selected) {
+                    const suggestion = document.getElementById('suggestion-' + f.id).value.trim();
+
+                    // Remove previous feedback from same student for same faculty
+                    const existingIdx = feedbacks.findIndex(fb => fb.studentRegno === user.regno && fb.facultyId === f.id);
+                    if (existingIdx > -1) feedbacks.splice(existingIdx, 1);
+
+                    feedbacks.push({
+                        studentRegno: user.regno,
+                        facultyId: f.id,
+                        facultyName: f.name,
+                        rating: selected.dataset.rating,
+                        suggestion: suggestion.substring(0, 150),
+                        timestamp: new Date().toISOString()
+                    });
+                    submitted++;
+                }
+            });
+
+            if (submitted === 0) {
+                showAlert('Please rate at least one faculty member.', 'warning');
+                return;
+            }
+
+            saveFeedback(feedbacks);
+            addLog('FEEDBACK', `Student submitted feedback for ${submitted} faculty`, user.name);
+            showAlert('Feedback submitted successfully! Thank you.', 'success');
+
+            setTimeout(() => window.location.href = 'student.html', 1500);
+        });
+    </script>
+</body>
+
+</html>

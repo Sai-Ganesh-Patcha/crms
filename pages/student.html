@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard - CRMS</title>
+    <link rel="stylesheet" href="../css/main.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Custom styles for better card visibility */
+        body {
+            background: linear-gradient(135deg, #e8f0fe 0%, #d4e4f7 100%);
+        }
+
+        .card {
+            border: 1px solid rgba(26, 54, 93, 0.15);
+            box-shadow: 0 4px 20px rgba(26, 54, 93, 0.12);
+        }
+
+        /* Student Details Card - Navy Blue accent */
+        .dashboard-grid .card:first-child {
+            border-left: 4px solid #1a365d;
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+        }
+
+        .dashboard-grid .card:first-child .card-header {
+            background: linear-gradient(135deg, #1a365d 0%, #2c5282 100%);
+        }
+
+        /* Performance Card - Teal accent */
+        .dashboard-grid .card:nth-child(2) {
+            border-left: 4px solid #0d9488;
+            background: linear-gradient(135deg, #ffffff 0%, #f0fdfa 100%);
+        }
+
+        .dashboard-grid .card:nth-child(2) .card-header {
+            background: linear-gradient(135deg, #0d9488 0%, #14b8a6 100%);
+        }
+
+        /* Semester Results Card - Purple accent */
+        .card.mb-3 {
+            border-left: 4px solid #7c3aed;
+            background: linear-gradient(135deg, #ffffff 0%, #faf5ff 100%);
+        }
+
+        .card.mb-3 .card-header {
+            background: linear-gradient(135deg, #7c3aed 0%, #8b5cf6 100%);
+        }
+
+        /* Chart containers - Blue accent */
+        .chart-container {
+            border: 1px solid rgba(26, 54, 93, 0.1);
+            border-left: 4px solid #3b82f6;
+            background: linear-gradient(135deg, #ffffff 0%, #eff6ff 100%);
+        }
+
+        /* Semester buttons - improved contrast */
+        .semester-btn {
+            background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
+            border: 2px solid #cbd5e1;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .semester-btn:hover {
+            background: linear-gradient(135deg, #1a365d 0%, #2c5282 100%);
+            color: white;
+            border-color: #1a365d;
+        }
+
+        .semester-btn:hover h4,
+        .semester-btn:hover .sgpa,
+        .semester-btn:hover .text-muted {
+            color: white !important;
+        }
+
+        .semester-btn.fail {
+            border-color: #fca5a5;
+            background: linear-gradient(135deg, #ffffff 0%, #fef2f2 100%);
+        }
+
+        /* Table styling */
+        .card-body table td {
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        /* Navbar shadow enhancement */
+        .navbar {
+            box-shadow: 0 4px 20px rgba(26, 54, 93, 0.15);
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="navbar-brand">🎓 CRMS - Student Portal</div>
+        <div class="nav-user">
+            <span id="userName">Student</span>
+            <button class="btn btn-sm btn-secondary" onclick="Auth.logout()">Logout</button>
+        </div>
+    </nav>
+
+    <div class="main-content full-width">
+        <div class="page-header">
+            <h1>Welcome, <span id="studentName">Student</span>!</h1>
+            <p>View your academic performance and results</p>
+        </div>
+
+        <!-- Student Details Card -->
+        <div class="dashboard-grid">
+            <div class="card">
+                <div class="card-header">
+                    <h3>📋 Student Details</h3>
+                </div>
+                <div class="card-body">
+                    <table style="width:100%">
+                        <tr>
+                            <td style="padding:0.5rem 0;color:#718096">Registration No:</td>
+                            <td id="regNo" style="font-weight:600"></td>
+                        </tr>
+                        <tr>
+                            <td style="padding:0.5rem 0;color:#718096">Name:</td>
+                            <td id="fullName" style="font-weight:600"></td>
+                        </tr>
+                        <tr>
+                            <td style="padding:0.5rem 0;color:#718096">Phone:</td>
+                            <td id="phone"></td>
+                        </tr>
+                        <tr>
+                            <td style="padding:0.5rem 0;color:#718096">Email:</td>
+                            <td id="email"></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    <h3>📊 Overall Performance</h3>
+                </div>
+                <div class="card-body text-center">
+                    <div style="font-size:3rem;font-weight:700;color:#1a365d" id="cgpaValue">0.00</div>
+                    <div style="color:#718096;margin-bottom:1rem">CGPA</div>
+                    <div id="performanceBadge" class="performance-badge">Loading...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Semester Buttons -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h3>📚 Semester Results</h3>
+            </div>
+            <div class="card-body">
+                <p class="text-muted">Click on a semester to view detailed results</p>
+                <div class="semester-grid" id="semesterGrid"></div>
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="grid-2 mb-3">
+            <div class="chart-container">
+                <div class="chart-header">
+                    <h3>📈 SGPA Progress</h3>
+                </div>
+                <canvas id="sgpaChart" height="200"></canvas>
+            </div>
+            <div class="chart-container">
+                <div class="chart-header">
+                    <h3>📊 Credits Distribution</h3>
+                </div>
+                <canvas id="creditsChart" height="200"></canvas>
+            </div>
+        </div>
+
+        <!-- Faculty Feedback Button -->
+        <div class="text-center mt-3">
+            <a href="student-feedback.html" class="btn btn-primary btn-lg">
+                ✍️ Submit Faculty Feedback
+            </a>
+        </div>
+    </div>
+
+    <!-- Semester Modal -->
+    <div class="modal-overlay" id="semesterModal">
+        <div class="modal" style="max-width:700px">
+            <div class="modal-header">
+                <h3 id="modalTitle">Semester Results</h3>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="modalContent"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/students1.js"></script>
+    <script src="../js/students2.js"></script>
+    <script src="../js/data.js"></script>
+    <script src="../js/security.js"></script>
+    <script src="../js/auth.js"></script>
+    <script>
+        // Protect page
+        if (!Auth.requireAuth('student')) { throw new Error('Access denied'); }
+
+        initializeData();
+        const user = Auth.getCurrentUser();
+        const student = getStudentByRegno(user.regno);
+
+        if (!student) {
+            alert('Student data not found!');
+            Auth.logout();
+        }
+
+        // Populate student details
+        document.getElementById('userName').textContent = student.name;
+        document.getElementById('studentName').textContent = student.name.split(' ')[0];
+        document.getElementById('regNo').textContent = student.regno;
+        document.getElementById('fullName').textContent = student.name;
+        document.getElementById('phone').textContent = student.phone || 'Not provided';
+        document.getElementById('email').textContent = student.email || 'Not provided';
+
+        // Calculate and display CGPA
+        const cgpa = parseFloat(calculateCGPA(student));
+        document.getElementById('cgpaValue').textContent = cgpa.toFixed(2);
+        const perf = getPerformanceStatus(cgpa);
+        document.getElementById('performanceBadge').textContent = perf.text;
+        document.getElementById('performanceBadge').className = 'performance-badge ' + perf.class;
+
+        // Generate semester buttons
+        const grid = document.getElementById('semesterGrid');
+        const semNames = { sem1: 'Semester 1', sem2: 'Semester 2', sem3: 'Semester 3', sem4: 'Semester 4', sem5: 'Semester 5', sem6: 'Semester 6', sem7: 'Semester 7', sem8: 'Semester 8' };
+
+        Object.entries(student.semesters || {}).forEach(([key, sem]) => {
+            const btn = document.createElement('div');
+            btn.className = 'semester-btn' + (sem.status === 'FAIL' ? ' fail' : '');
+            btn.innerHTML = `
+                <h4>${semNames[key] || key}</h4>
+                <div class="sgpa">${sem.sgpa && !isNaN(sem.sgpa) ? sem.sgpa.toFixed(2) : 'N/A'}</div>
+                <div class="text-muted" style="font-size:0.875rem">${sem.status || 'N/A'}</div>
+            `;
+            btn.onclick = () => showSemesterDetails(key, sem);
+            grid.appendChild(btn);
+        });
+
+        // Charts data
+        const labels = [], sgpaData = [], creditsData = [];
+        Object.entries(student.semesters || {}).forEach(([key, sem]) => {
+            labels.push(semNames[key] || key);
+            sgpaData.push(sem.sgpa && !isNaN(sem.sgpa) ? sem.sgpa : 0);
+            creditsData.push(sem.credits || 0);
+        });
+
+        // SGPA Chart
+        new Chart(document.getElementById('sgpaChart'), {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'SGPA',
+                    data: sgpaData,
+                    borderColor: '#1a365d',
+                    backgroundColor: 'rgba(26,54,93,0.1)',
+                    fill: true,
+                    tension: 0.3
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: { y: { min: 0, max: 10 } }
+            }
+        });
+
+        // Credits Chart
+        new Chart(document.getElementById('creditsChart'), {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Credits',
+                    data: creditsData,
+                    backgroundColor: '#38a169'
+                }]
+            },
+            options: { responsive: true }
+        });
+
+        function showSemesterDetails(semKey, semData) {
+            document.getElementById('modalTitle').textContent = semNames[semKey] || semKey;
+            let html = `
+                <div class="flex justify-between mb-2">
+                    <span><strong>Status:</strong> <span class="badge badge-${semData.status === 'PASS' ? 'success' : 'danger'}">${semData.status}</span></span>
+                    <span><strong>SGPA:</strong> ${semData.sgpa && !isNaN(semData.sgpa) ? semData.sgpa.toFixed(2) : 'N/A'}</span>
+                    <span><strong>Credits:</strong> ${semData.credits || 'N/A'}</span>
+                </div>
+                <table class="table" style="margin-top:1rem">
+                    <thead><tr><th>Subject</th><th>Grade</th></tr></thead>
+                    <tbody>`;
+
+            Object.entries(semData.subjects || {}).forEach(([subj, grade]) => {
+                const gradeClass = grade === 'F' ? 'danger' : (grade === 'S' || grade === 'A' ? 'success' : 'primary');
+                html += `<tr><td>${CRMS_DATA.subjectNames[subj] || subj}</td><td><span class="badge badge-${gradeClass}">${grade}</span></td></tr>`;
+            });
+
+            html += '</tbody></table>';
+            document.getElementById('modalContent').innerHTML = html;
+            document.getElementById('semesterModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('semesterModal').classList.remove('active');
+        }
+
+        document.getElementById('semesterModal').addEventListener('click', function (e) {
+            if (e.target === this) closeModal();
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - CRMS</title>
+    <link rel="stylesheet" href="../css/main.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #e8f0fe 0%, #d4e4f7 100%);
+        }
+
+        .admin-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .admin-card {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .admin-card:hover {
+            border-color: #1a365d;
+            transform: translateY(-6px);
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+        }
+
+        .admin-card .icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .section {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+        }
+
+        @media (max-width: 768px) {
+            .admin-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="navbar-brand">🎓 CRMS - Admin Portal</div>
+        <div class="nav-user">
+            <span id="userName">Administrator</span>
+            <a href="change-password.html" class="btn btn-sm btn-secondary">Change Password</a>
+            <button class="btn btn-sm btn-danger" onclick="Auth.logout()">Logout</button>
+        </div>
+    </nav>
+
+    <div class="main-content full-width">
+        <div class="page-header">
+            <h1>System Administration</h1>
+            <p>Manage users, students, results, and system settings</p>
+        </div>
+
+        <!-- Stats -->
+        <div class="dashboard-grid mb-3" id="statsGrid"></div>
+
+        <!-- Admin Feature Cards -->
+        <div class="admin-grid">
+            <div class="admin-card" id="usersCard">
+                <div class="icon">👥</div>
+                <h3>User Management</h3>
+                <p class="text-muted">Create, edit, delete users</p>
+            </div>
+            <div class="admin-card" id="studentsCard">
+                <div class="icon">🎓</div>
+                <h3>Student Management</h3>
+                <p class="text-muted">Update phone & email details</p>
+            </div>
+            <div class="admin-card" id="reportsCard">
+                <div class="icon">📋</div>
+                <h3>Reports & Analytics</h3>
+                <p class="text-muted">Generate department reports</p>
+            </div>
+            <div class="admin-card" id="logsCard">
+                <div class="icon">🔒</div>
+                <h3>Activity Logs</h3>
+                <p class="text-muted">Track system activities</p>
+            </div>
+            <div class="admin-card" id="backupCard">
+                <div class="icon">💾</div>
+                <h3>Backup & Restore</h3>
+                <p class="text-muted">Backup and restore data</p>
+            </div>
+            <div class="admin-card" id="settingsCard">
+                <div class="icon">⚙️</div>
+                <h3>System Settings</h3>
+                <p class="text-muted">Reset & configuration</p>
+            </div>
+        </div>
+
+        <!-- User Management Section -->
+        <div id="users" class="section" style="display:none">
+            <div class="flex justify-between items-center mb-2">
+                <h2>👥 User Management</h2>
+                <button class="btn btn-success" id="addUserBtn">+ Add User</button>
+            </div>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Name</th>
+                        <th>Role</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="usersTable"></tbody>
+            </table>
+        </div>
+
+        <!-- Student Management Section -->
+        <div id="students" class="section" style="display:none">
+            <h2 class="mb-2">🎓 Student Management</h2>
+            <div class="search-box mb-2" style="max-width:400px">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8" />
+                    <path d="m21 21-4.35-4.35" />
+                </svg>
+                <input type="text" id="studentSearchInput" placeholder="Search by name or regno...">
+            </div>
+            <div style="overflow-x:auto">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Reg No</th>
+                            <th>Name</th>
+                            <th>Phone</th>
+                            <th>Email</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="studentsMgmtTable"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Reports Section -->
+        <div id="reports" class="section" style="display:none">
+            <h2 class="mb-2">📋 Reports & Analytics</h2>
+            <button class="btn btn-primary" id="generateReportBtn">📄 Generate Report</button>
+            <div id="reportContent" class="mt-2"></div>
+        </div>
+
+        <!-- Logs Section -->
+        <div id="logs" class="section" style="display:none">
+            <div class="flex justify-between items-center mb-2">
+                <h2>🔒 Activity Logs</h2>
+                <button class="btn btn-sm btn-danger" id="clearLogsBtn">Clear Logs</button>
+            </div>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Time</th>
+                        <th>Action</th>
+                        <th>Details</th>
+                        <th>User</th>
+                    </tr>
+                </thead>
+                <tbody id="logsTable"></tbody>
+            </table>
+        </div>
+
+        <!-- Backup Section -->
+        <div id="backup" class="section" style="display:none">
+            <h2 class="mb-2">💾 Backup & Restore</h2>
+            <div class="grid-2">
+                <div class="card">
+                    <div class="card-body">
+                        <h4>Create Backup</h4>
+                        <button class="btn btn-primary mt-1" id="downloadBackupBtn">📥 Download Backup</button>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <h4>Restore from Backup</h4>
+                        <input type="file" id="restoreFile" class="form-control" accept=".json">
+                        <button class="btn btn-warning mt-1" id="restoreBtn">📤 Restore</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Section -->
+        <div id="settings" class="section" style="display:none">
+            <h2 class="mb-2">⚙️ System Settings</h2>
+            <div class="card" style="max-width:400px">
+                <div class="card-body">
+                    <h4>Reset System</h4>
+                    <p class="text-muted">Warning: This will reset ALL data to defaults</p>
+                    <button class="btn btn-danger mt-1" id="resetBtn">🔄 Reset System</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit User Modal -->
+    <div class="modal-overlay" id="userModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="userModalTitle">Add User</h3>
+                <button class="modal-close" onclick="closeModal('userModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="userForm">
+                    <input type="hidden" id="editMode" value="add">
+                    <div class="form-group">
+                        <label class="form-label">Username</label>
+                        <input type="text" id="formUsername" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Name</label>
+                        <input type="text" id="formName" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Password</label>
+                        <input type="password" id="formPassword" class="form-control">
+                        <small class="text-muted">Leave blank to keep current (edit mode)</small>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Role</label>
+                        <select id="formRole" class="form-control">
+                            <option value="faculty">Faculty</option>
+                            <option value="hod">HOD</option>
+                            <option value="admin">Admin</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('userModal')">Cancel</button>
+                <button class="btn btn-primary" id="saveUserBtn">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Student Modal -->
+    <div class="modal-overlay" id="studentModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Edit Student Details</h3>
+                <button class="modal-close" onclick="closeModal('studentModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="studentForm">
+                    <input type="hidden" id="editStudentRegno">
+                    <div class="form-group">
+                        <label class="form-label">Registration No</label>
+                        <input type="text" id="displayRegno" class="form-control" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Name</label>
+                        <input type="text" id="editStudentName" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Phone</label>
+                        <input type="tel" id="editStudentPhone" class="form-control" placeholder="Enter phone number">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Email</label>
+                        <input type="email" id="editStudentEmail" class="form-control"
+                            placeholder="Enter email address">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('studentModal')">Cancel</button>
+                <button class="btn btn-primary" id="saveStudentBtn">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/students1.js"></script>
+    <script src="../js/students2.js"></script>
+    <script src="../js/data.js"></script>
+    <script src="../js/security.js"></script>
+    <script src="../js/auth.js"></script>
+    <script>
+        if (!Auth.requireAuth('admin')) { throw new Error('Access denied'); }
+        initializeData();
+
+        const user = Auth.getCurrentUser();
+        document.getElementById('userName').textContent = user.name;
+
+        const stats = getDepartmentStats();
+
+        // Stats
+        document.getElementById('statsGrid').innerHTML = `
+            <div class="stat-card"><div class="stat-icon primary">👥</div><div class="stat-content"><h3>${stats.total}</h3><p>Students</p></div></div>
+            <div class="stat-card"><div class="stat-icon success">👨‍🏫</div><div class="stat-content"><h3>${getFaculty().length}</h3><p>Faculty</p></div></div>
+            <div class="stat-card"><div class="stat-icon warning">🔐</div><div class="stat-content"><h3>${getUsers().length}</h3><p>System Users</p></div></div>
+            <div class="stat-card"><div class="stat-icon danger">📝</div><div class="stat-content"><h3>${getLogs().length}</h3><p>Log Entries</p></div></div>
+        `;
+
+        // Card click handlers
+        document.getElementById('usersCard').addEventListener('click', () => showSection('users'));
+        document.getElementById('studentsCard').addEventListener('click', () => showSection('students'));
+        document.getElementById('reportsCard').addEventListener('click', () => showSection('reports'));
+        document.getElementById('logsCard').addEventListener('click', () => showSection('logs'));
+        document.getElementById('backupCard').addEventListener('click', () => showSection('backup'));
+        document.getElementById('settingsCard').addEventListener('click', () => showSection('settings'));
+
+        // Button handlers
+        document.getElementById('addUserBtn').addEventListener('click', showAddUser);
+        document.getElementById('saveUserBtn').addEventListener('click', saveUser);
+        document.getElementById('saveStudentBtn').addEventListener('click', saveStudentDetails);
+        document.getElementById('generateReportBtn').addEventListener('click', generateReport);
+        document.getElementById('clearLogsBtn').addEventListener('click', clearLogs);
+        document.getElementById('downloadBackupBtn').addEventListener('click', backupData);
+        document.getElementById('restoreBtn').addEventListener('click', restoreData);
+        document.getElementById('resetBtn').addEventListener('click', resetSystem);
+        document.getElementById('studentSearchInput').addEventListener('input', filterStudentsMgmt);
+
+        function showSection(id) {
+            document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
+            document.getElementById(id).style.display = 'block';
+            if (id === 'users') loadUsers();
+            else if (id === 'students') loadStudentsMgmt();
+            else if (id === 'logs') loadLogs();
+        }
+
+        // === USER MANAGEMENT ===
+        function loadUsers() {
+            document.getElementById('usersTable').innerHTML = getUsers().map(u => `
+                <tr>
+                    <td>${u.username}</td>
+                    <td>${u.name}</td>
+                    <td><span class="badge badge-primary">${u.role.toUpperCase()}</span></td>
+                    <td>
+                        <button class="btn btn-sm btn-secondary" onclick="editUser('${u.username}')">Edit</button>
+                        ${u.username !== 'admin' ? `<button class="btn btn-sm btn-danger" onclick="deleteUser('${u.username}')">Delete</button>` : ''}
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function showAddUser() {
+            document.getElementById('editMode').value = 'add';
+            document.getElementById('userModalTitle').textContent = 'Add User';
+            document.getElementById('formUsername').value = '';
+            document.getElementById('formUsername').disabled = false;
+            document.getElementById('formName').value = '';
+            document.getElementById('formPassword').value = '';
+            document.getElementById('formRole').value = 'faculty';
+            document.getElementById('userModal').classList.add('active');
+        }
+
+        function editUser(username) {
+            const u = getUsers().find(user => user.username === username);
+            document.getElementById('editMode').value = 'edit';
+            document.getElementById('userModalTitle').textContent = 'Edit User';
+            document.getElementById('formUsername').value = u.username;
+            document.getElementById('formUsername').disabled = true;
+            document.getElementById('formName').value = u.name;
+            document.getElementById('formPassword').value = '';
+            document.getElementById('formRole').value = u.role;
+            document.getElementById('userModal').classList.add('active');
+        }
+
+        function saveUser() {
+            const mode = document.getElementById('editMode').value;
+            const username = document.getElementById('formUsername').value.trim();
+            const name = document.getElementById('formName').value.trim();
+            const password = document.getElementById('formPassword').value;
+            const role = document.getElementById('formRole').value;
+
+            if (!username || !name) { alert('Please fill all required fields'); return; }
+
+            const users = getUsers();
+
+            if (mode === 'add') {
+                if (users.find(u => u.username === username)) { alert('Username already exists'); return; }
+                if (!password) { alert('Password is required for new users'); return; }
+                users.push({ username, name, password, role });
+                addLog('USER_CREATE', `Created user: ${username} (${role})`, user.name);
+            } else {
+                const idx = users.findIndex(u => u.username === username);
+                if (idx > -1) {
+                    users[idx].name = name;
+                    users[idx].role = role;
+                    if (password) users[idx].password = password;
+                    addLog('USER_EDIT', `Updated user: ${username}`, user.name);
+                }
+            }
+
+            saveUsers(users);
+            closeModal('userModal');
+            loadUsers();
+            alert('User saved successfully!');
+        }
+
+        function deleteUser(username) {
+            if (!confirm('Delete user ' + username + '?')) return;
+            const users = getUsers().filter(u => u.username !== username);
+            saveUsers(users);
+            addLog('USER_DELETE', `Deleted user: ${username}`, user.name);
+            loadUsers();
+        }
+
+        // === STUDENT MANAGEMENT ===
+        let allStudentsMgmt = getStudents().filter(s => s.name && s.name !== 'NaN');
+
+        function loadStudentsMgmt() {
+            renderStudentsMgmt(allStudentsMgmt);
+        }
+
+        function renderStudentsMgmt(data) {
+            document.getElementById('studentsMgmtTable').innerHTML = data.map(s => `
+                <tr>
+                    <td>${s.regno}</td>
+                    <td>${s.name}</td>
+                    <td>${s.phone || '<span class="text-muted">Not set</span>'}</td>
+                    <td>${s.email || '<span class="text-muted">Not set</span>'}</td>
+                    <td><button class="btn btn-sm btn-primary" onclick="editStudentDetails('${s.regno}')">Edit</button></td>
+                </tr>
+            `).join('');
+        }
+
+        function filterStudentsMgmt() {
+            const query = document.getElementById('studentSearchInput').value.toLowerCase();
+            const filtered = allStudentsMgmt.filter(s =>
+                s.name.toLowerCase().includes(query) || s.regno.toLowerCase().includes(query)
+            );
+            renderStudentsMgmt(filtered);
+        }
+
+        function editStudentDetails(regno) {
+            const student = getStudentByRegno(regno);
+            document.getElementById('editStudentRegno').value = regno;
+            document.getElementById('displayRegno').value = regno;
+            document.getElementById('editStudentName').value = student.name;
+            document.getElementById('editStudentPhone').value = student.phone || '';
+            document.getElementById('editStudentEmail').value = student.email || '';
+            document.getElementById('studentModal').classList.add('active');
+        }
+
+        function saveStudentDetails() {
+            const regno = document.getElementById('editStudentRegno').value;
+            const students = getStudents();
+            const idx = students.findIndex(s => s.regno === regno);
+            if (idx > -1) {
+                students[idx].name = document.getElementById('editStudentName').value;
+                students[idx].phone = document.getElementById('editStudentPhone').value;
+                students[idx].email = document.getElementById('editStudentEmail').value;
+                saveStudents(students);
+                addLog('STUDENT_EDIT', `Updated student details: ${regno}`, user.name);
+                closeModal('studentModal');
+                allStudentsMgmt = students.filter(s => s.name && s.name !== 'NaN');
+                loadStudentsMgmt();
+                alert('Student details updated successfully!');
+            }
+        }
+
+        // === LOGS ===
+        function loadLogs() {
+            document.getElementById('logsTable').innerHTML = getLogs().slice(0, 50).map(l => `
+                <tr>
+                    <td style="white-space:nowrap">${new Date(l.timestamp).toLocaleString()}</td>
+                    <td><span class="badge badge-primary">${l.action}</span></td>
+                    <td>${l.details}</td>
+                    <td>${l.user}</td>
+                </tr>
+            `).join('') || '<tr><td colspan="4" class="text-center text-muted">No logs</td></tr>';
+        }
+
+        function clearLogs() {
+            if (!confirm('Clear all activity logs?')) return;
+            localStorage.setItem('crms_logs', '[]');
+            loadLogs();
+        }
+
+        // === REPORTS ===
+        function generateReport() {
+            const stats = getDepartmentStats();
+            const toppers = getToppers().slice(0, 5);
+            document.getElementById('reportContent').innerHTML = `
+                <div class="card"><div class="card-body">
+                    <h4>📊 Department Performance Report</h4>
+                    <p><strong>Generated:</strong> ${new Date().toLocaleString()}</p>
+                    <hr>
+                    <h5>Summary Statistics</h5>
+                    <p>Total Students: ${stats.total}<br>
+                    Excellent (≥9 CGPA): ${stats.excellent}<br>
+                    Best (8-9 CGPA): ${stats.best}<br>
+                    Good (7-8 CGPA): ${stats.good}<br>
+                    Average (6-7 CGPA): ${stats.average}<br>
+                    Poor (<6 CGPA): ${stats.poor}<br>
+                    Students with Backlogs: ${stats.withBacklogs}</p>
+                    <h5>Top 5 Students</h5>
+                    <ol>${toppers.map(t => `<li>${t.name} - ${t.cgpa.toFixed(2)}</li>`).join('')}</ol>
+                </div></div>
+            `;
+        }
+
+        // === BACKUP & RESTORE ===
+        function backupData() {
+            const data = {
+                users: getUsers(),
+                students: getStudents(),
+                faculty: getFaculty(),
+                feedback: getFeedback(),
+                suspended: getSuspended(),
+                logs: getLogs(),
+                timestamp: new Date().toISOString()
+            };
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'crms_backup_' + new Date().toISOString().split('T')[0] + '.json';
+            a.click();
+            addLog('BACKUP', 'System backup created', user.name);
+        }
+
+        function restoreData() {
+            const file = document.getElementById('restoreFile').files[0];
+            if (!file) { alert('Select a backup file'); return; }
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if (data.users) saveUsers(data.users);
+                    if (data.students) saveStudents(data.students);
+                    if (data.faculty) saveFaculty(data.faculty);
+                    if (data.feedback) saveFeedback(data.feedback);
+                    if (data.suspended) saveSuspended(data.suspended);
+                    addLog('RESTORE', 'System restored from backup', user.name);
+                    alert('Data restored successfully!');
+                    location.reload();
+                } catch (err) { alert('Invalid backup file'); }
+            };
+            reader.readAsText(file);
+        }
+
+        function resetSystem() {
+            if (!confirm('⚠️ This will reset ALL data to defaults. Continue?')) return;
+            if (!confirm('Are you REALLY sure? This cannot be undone!')) return;
+            localStorage.clear();
+            alert('System reset complete. Redirecting to login...');
+            window.location.href = 'login.html';
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+        }
+
+        document.querySelectorAll('.modal-overlay').forEach(m => {
+            m.addEventListener('click', function (e) { if (e.target === this) this.classList.remove('active'); });
+        });
+    </script>
+</body>
+
+</html>

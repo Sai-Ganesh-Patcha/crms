@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HOD Dashboard - CRMS</title>
+    <link rel="stylesheet" href="../css/main.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* HOD page specific styles for better visibility */
+        body {
+            background: linear-gradient(135deg, #e8f0fe 0%, #d4e4f7 100%);
+        }
+
+        .action-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+            margin: 2rem 0;
+            max-width: 800px;
+        }
+
+        .action-card {
+            background: white;
+            border-radius: 16px;
+            padding: 2.5rem;
+            text-align: center;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 3px solid transparent;
+        }
+
+        .action-card:hover {
+            border-color: #1a365d;
+            transform: translateY(-8px);
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .action-icon {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 1.5rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+        }
+
+        .action-icon.faculty {
+            background: linear-gradient(135deg, #1a365d, #2c5282);
+        }
+
+        .action-icon.student {
+            background: linear-gradient(135deg, #38a169, #48bb78);
+        }
+
+        .section {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+        }
+
+        .faculty-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .faculty-card {
+            background: linear-gradient(135deg, #f8fafc, #edf2f7);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 2px solid transparent;
+        }
+
+        .faculty-card:hover {
+            border-color: #1a365d;
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+        }
+
+        .faculty-avatar {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #1a365d, #2c5282);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin: 0 auto 1rem;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="navbar-brand">🎓 CRMS - HOD Portal</div>
+        <div class="nav-user">
+            <span id="userName">HOD</span>
+            <a href="change-password.html" class="btn btn-sm btn-secondary">Change Password</a>
+            <button class="btn btn-sm btn-danger" onclick="Auth.logout()">Logout</button>
+        </div>
+    </nav>
+
+    <div class="main-content full-width">
+        <div class="page-header">
+            <h1>Department Head Dashboard</h1>
+            <p>Manage faculty, students, and department analytics</p>
+        </div>
+
+        <!-- Large Action Buttons -->
+        <div class="action-grid">
+            <div class="action-card" id="facultyBtn">
+                <div class="action-icon faculty">👨‍🏫</div>
+                <h3>Faculty Management</h3>
+                <p>View faculty details and feedback scores</p>
+            </div>
+            <div class="action-card" id="studentBtn">
+                <div class="action-icon student">👨‍🎓</div>
+                <h3>Student Management</h3>
+                <p>View, suspend, and manage students</p>
+            </div>
+        </div>
+
+        <!-- Department Stats -->
+        <div class="dashboard-grid mb-3" id="statsGrid"></div>
+
+        <!-- Charts -->
+        <div class="grid-2 mb-3">
+            <div class="chart-container">
+                <h3>📊 CGPA Distribution</h3>
+                <canvas id="cgpaChart" height="200"></canvas>
+            </div>
+            <div class="chart-container">
+                <h3>📈 Pass Percentage by Status</h3>
+                <canvas id="passChart" height="200"></canvas>
+            </div>
+        </div>
+
+        <!-- Faculty Section -->
+        <div id="faculty-section" class="section" style="display:none">
+            <h2 class="mb-2">👨‍🏫 Faculty Members</h2>
+            <div class="faculty-grid" id="facultyGrid"></div>
+        </div>
+
+        <!-- Student Section -->
+        <div id="student-section" class="section" style="display:none">
+            <div class="table-container">
+                <div class="table-header">
+                    <h3>👨‍🎓 All Students</h3>
+                    <div class="search-box">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <circle cx="11" cy="11" r="8" />
+                            <path d="m21 21-4.35-4.35" />
+                        </svg>
+                        <input type="text" id="searchInput" placeholder="Search by name or regno...">
+                    </div>
+                </div>
+                <div style="overflow-x:auto">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Regd. No</th>
+                                <th>Name</th>
+                                <th>CGPA</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="studentsTable"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Faculty Feedback Modal -->
+    <div class="modal-overlay" id="feedbackModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="feedbackTitle">Faculty Feedback</h3>
+                <button class="modal-close" onclick="closeModal('feedbackModal')">&times;</button>
+            </div>
+            <div class="modal-body" id="feedbackContent"></div>
+        </div>
+    </div>
+
+    <!-- Student Edit Modal -->
+    <div class="modal-overlay" id="editModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Edit Student Details</h3>
+                <button class="modal-close" onclick="closeModal('editModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="editForm">
+                    <input type="hidden" id="editRegno">
+                    <div class="form-group">
+                        <label class="form-label">Name</label>
+                        <input type="text" id="editName" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Phone</label>
+                        <input type="text" id="editPhone" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Email</label>
+                        <input type="email" id="editEmail" class="form-control">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('editModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="saveStudent()">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/students1.js"></script>
+    <script src="../js/students2.js"></script>
+    <script src="../js/data.js"></script>
+    <script src="../js/security.js"></script>
+    <script src="../js/auth.js"></script>
+    <script>
+        // Check authentication
+        if (!Auth.requireAuth(['hod', 'admin'])) {
+            throw new Error('Access denied');
+        }
+
+        initializeData();
+
+        const user = Auth.getCurrentUser();
+        document.getElementById('userName').textContent = user.name;
+
+        const students = getStudents().filter(s => s.name && s.name !== 'NaN');
+        const faculty = getFaculty();
+        const stats = getDepartmentStats();
+        const suspended = getSuspended();
+
+        // Stats Grid
+        document.getElementById('statsGrid').innerHTML = `
+            <div class="stat-card"><div class="stat-icon primary">👥</div><div class="stat-content"><h3>${stats.total}</h3><p>Total Students</p></div></div>
+            <div class="stat-card"><div class="stat-icon success">🌟</div><div class="stat-content"><h3>${stats.excellent}</h3><p>Excellent (≥9)</p></div></div>
+            <div class="stat-card"><div class="stat-icon warning">⚠️</div><div class="stat-content"><h3>${stats.poor}</h3><p>Poor Performers</p></div></div>
+            <div class="stat-card"><div class="stat-icon danger">🚫</div><div class="stat-content"><h3>${suspended.length}</h3><p>Suspended</p></div></div>
+        `;
+
+        // Charts
+        new Chart(document.getElementById('cgpaChart'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Excellent (≥9)', 'Best (8-9)', 'Good (7-8)', 'Average (6-7)', 'Poor (<6)'],
+                datasets: [{
+                    data: [stats.excellent, stats.best, stats.good, stats.average, stats.poor],
+                    backgroundColor: ['#38a169', '#3182ce', '#319795', '#d69e2e', '#e53e3e']
+                }]
+            }
+        });
+
+        const passPercent = stats.total > 0 ? (((stats.excellent + stats.best + stats.good + stats.average) / stats.total) * 100).toFixed(1) : 0;
+        new Chart(document.getElementById('passChart'), {
+            type: 'bar',
+            data: {
+                labels: ['Pass Rate', 'Backlogs Rate'],
+                datasets: [{
+                    label: 'Percentage',
+                    data: [passPercent, stats.total > 0 ? ((stats.withBacklogs / stats.total) * 100).toFixed(1) : 0],
+                    backgroundColor: ['#38a169', '#e53e3e']
+                }]
+            },
+            options: { scales: { y: { max: 100 } } }
+        });
+
+        // Build Faculty Grid
+        const facultyGrid = document.getElementById('facultyGrid');
+        faculty.forEach(f => {
+            const feedback = getFacultyAvgFeedback(f.id);
+            const card = document.createElement('div');
+            card.className = 'faculty-card';
+            card.innerHTML = `
+                <div class="faculty-avatar">${f.name.charAt(0)}</div>
+                <h4>${f.name}</h4>
+                <p style="color:#718096;margin:0">${f.subject}</p>
+                <div style="margin-top:0.75rem"><span class="badge badge-primary">Avg: ${feedback.avg || 'N/A'}</span></div>
+            `;
+            card.onclick = function () { showFacultyFeedback(f); };
+            facultyGrid.appendChild(card);
+        });
+
+        // Button click handlers - using addEventListener instead of onclick
+        document.getElementById('facultyBtn').addEventListener('click', function () {
+            showSection('faculty-section');
+        });
+
+        document.getElementById('studentBtn').addEventListener('click', function () {
+            showSection('student-section');
+        });
+
+        // Search input handler
+        document.getElementById('searchInput').addEventListener('input', filterStudents);
+
+        function showSection(id) {
+            document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
+            document.getElementById(id).style.display = 'block';
+            if (id === 'student-section') {
+                loadStudents(allStudentsData);
+            }
+        }
+
+        function showFacultyFeedback(f) {
+            const feedback = getFacultyAvgFeedback(f.id);
+            const allFeedback = getFeedback().filter(fb => fb.facultyId === f.id);
+
+            let html = `<div class="text-center mb-2">
+                <div style="font-size:3rem">${feedback.avg >= 4 ? '🌟' : feedback.avg >= 3 ? '👍' : '📊'}</div>
+                <h2 style="margin:0.5rem 0">${feedback.avg || 'N/A'}</h2>
+                <p class="text-muted">Average Rating (${feedback.count} responses)</p>
+            </div>`;
+
+            if (allFeedback.length > 0) {
+                html += '<h4>Recent Suggestions:</h4><ul style="max-height:200px;overflow-y:auto">';
+                allFeedback.filter(f => f.suggestion).slice(0, 10).forEach(fb => {
+                    html += `<li style="margin-bottom:0.5rem">"${fb.suggestion}"</li>`;
+                });
+                html += '</ul>';
+            }
+
+            document.getElementById('feedbackTitle').textContent = f.name + ' - Feedback';
+            document.getElementById('feedbackContent').innerHTML = html;
+            document.getElementById('feedbackModal').classList.add('active');
+        }
+
+        // Students Table
+        let allStudentsData = students.map(s => ({ ...s, cgpa: parseFloat(calculateCGPA(s)) }));
+
+        function loadStudents(data) {
+            document.getElementById('studentsTable').innerHTML = data.map(s => {
+                const isSuspended = suspended.includes(s.regno);
+                const perf = getPerformanceStatus(s.cgpa);
+                return `<tr class="${isSuspended ? 'text-muted' : ''}">
+                    <td>${s.regno} ${isSuspended ? '<span class="suspended-badge">SUSPENDED</span>' : ''}</td>
+                    <td>${s.name}</td>
+                    <td><strong>${s.cgpa.toFixed(2)}</strong></td>
+                    <td><span class="badge ${perf.class}" style="background:none">${perf.text}</span></td>
+                    <td>
+                        <button class="btn btn-sm btn-secondary" onclick="editStudent('${s.regno}')">Edit</button>
+                        <button class="btn btn-sm ${isSuspended ? 'btn-success' : 'btn-danger'}" onclick="toggleSuspend('${s.regno}')">${isSuspended ? 'Restore' : 'Suspend'}</button>
+                    </td>
+                </tr>`;
+            }).join('');
+        }
+
+        function filterStudents() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = allStudentsData.filter(s =>
+                s.name.toLowerCase().includes(query) || s.regno.toLowerCase().includes(query)
+            );
+            loadStudents(filtered);
+        }
+
+        function editStudent(regno) {
+            const student = getStudentByRegno(regno);
+            document.getElementById('editRegno').value = regno;
+            document.getElementById('editName').value = student.name;
+            document.getElementById('editPhone').value = student.phone || '';
+            document.getElementById('editEmail').value = student.email || '';
+            document.getElementById('editModal').classList.add('active');
+        }
+
+        function saveStudent() {
+            const regno = document.getElementById('editRegno').value;
+            const allStudents = getStudents();
+            const idx = allStudents.findIndex(s => s.regno === regno);
+            if (idx > -1) {
+                allStudents[idx].name = document.getElementById('editName').value;
+                allStudents[idx].phone = document.getElementById('editPhone').value;
+                allStudents[idx].email = document.getElementById('editEmail').value;
+                saveStudents(allStudents);
+                addLog('STUDENT_EDIT', `Updated student: ${regno}`, user.name);
+                alert('Student updated successfully!');
+                location.reload();
+            }
+        }
+
+        function toggleSuspend(regno) {
+            const action = toggleSuspension(regno);
+            addLog(action ? 'SUSPEND' : 'RESTORE', `${action ? 'Suspended' : 'Restored'} student: ${regno}`, user.name);
+            alert(`Student ${action ? 'suspended' : 'restored'} successfully!`);
+            location.reload();
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+        }
+
+        // Close modals on overlay click
+        document.querySelectorAll('.modal-overlay').forEach(m => {
+            m.addEventListener('click', function (e) {
+                if (e.target === this) this.classList.remove('active');
+            });
+        });
+    </script>
+</body>
+
+</html>
