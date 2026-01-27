@@ -1329,3 +1329,486 @@ a:hover {
         border: 1px solid #ddd;
     }
 }
+
+/* =====================================================
+   PROFESSIONAL ENHANCEMENTS - Toast Notifications
+   ===================================================== */
+
+/* Toast Container */
+.toast-container {
+    position: fixed;
+    top: 80px;
+    right: 20px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 380px;
+}
+
+/* Toast */
+.toast {
+    background: var(--white);
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    animation: toastSlideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    border-left: 4px solid var(--primary);
+    position: relative;
+    overflow: hidden;
+}
+
+.toast.toast-success {
+    border-left-color: var(--accent);
+}
+
+.toast.toast-error {
+    border-left-color: var(--danger);
+}
+
+.toast.toast-warning {
+    border-left-color: var(--warning);
+}
+
+.toast.toast-info {
+    border-left-color: #3182ce;
+}
+
+.toast-icon {
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+
+.toast-content {
+    flex: 1;
+}
+
+.toast-title {
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 2px;
+}
+
+.toast-message {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.toast-close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.25rem;
+    color: var(--text-muted);
+    padding: 0;
+    line-height: 1;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+}
+
+.toast-close:hover {
+    opacity: 1;
+}
+
+.toast-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    background: currentColor;
+    opacity: 0.3;
+    animation: toastProgress 4s linear forwards;
+}
+
+.toast.toast-success .toast-progress {
+    background: var(--accent);
+}
+
+.toast.toast-error .toast-progress {
+    background: var(--danger);
+}
+
+.toast.toast-warning .toast-progress {
+    background: var(--warning);
+}
+
+.toast.toast-info .toast-progress {
+    background: #3182ce;
+}
+
+@keyframes toastSlideIn {
+    from {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes toastSlideOut {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    to {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+}
+
+@keyframes toastProgress {
+    from {
+        width: 100%;
+    }
+
+    to {
+        width: 0%;
+    }
+}
+
+/* =====================================================
+   Page Entrance Animations
+   ===================================================== */
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.animate-fadeInUp {
+    animation: fadeInUp 0.5s ease-out;
+}
+
+.animate-fadeIn {
+    animation: fadeIn 0.4s ease-out;
+}
+
+.animate-scaleIn {
+    animation: scaleIn 0.3s ease-out;
+}
+
+/* Staggered animations for cards */
+.dashboard-grid>*:nth-child(1) {
+    animation: fadeInUp 0.4s ease-out 0.1s both;
+}
+
+.dashboard-grid>*:nth-child(2) {
+    animation: fadeInUp 0.4s ease-out 0.2s both;
+}
+
+.dashboard-grid>*:nth-child(3) {
+    animation: fadeInUp 0.4s ease-out 0.3s both;
+}
+
+.dashboard-grid>*:nth-child(4) {
+    animation: fadeInUp 0.4s ease-out 0.4s both;
+}
+
+.stat-card {
+    animation: fadeInUp 0.4s ease-out both;
+}
+
+/* =====================================================
+   Enhanced Button Interactions
+   ===================================================== */
+
+.btn {
+    position: relative;
+    overflow: hidden;
+}
+
+.btn::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: width 0.4s, height 0.4s;
+}
+
+.btn:active::after {
+    width: 200px;
+    height: 200px;
+}
+
+.btn:active {
+    transform: scale(0.98);
+}
+
+.btn-loading {
+    pointer-events: none;
+    opacity: 0.8;
+}
+
+.btn-loading::before {
+    content: '';
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid transparent;
+    border-top-color: currentColor;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin-right: 8px;
+}
+
+/* =====================================================
+   Footer
+   ===================================================== */
+
+.app-footer {
+    background: var(--primary-dark, #0d2137);
+    color: rgba(255, 255, 255, 0.8);
+    padding: 1rem 2rem;
+    text-align: center;
+    font-size: 0.875rem;
+    margin-top: auto;
+}
+
+.app-footer a {
+    color: white;
+}
+
+.footer-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.footer-left {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.footer-right {
+    font-size: 0.8rem;
+    opacity: 0.7;
+}
+
+/* =====================================================
+   Session Warning Modal
+   ===================================================== */
+
+.session-warning {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: linear-gradient(135deg, #d69e2e, #ecc94b);
+    color: #1a202c;
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    z-index: 9999;
+    animation: fadeInUp 0.4s ease-out;
+}
+
+.session-warning-icon {
+    font-size: 1.5rem;
+}
+
+.session-warning-text strong {
+    display: block;
+}
+
+.session-warning .btn {
+    margin-left: 1rem;
+}
+
+/* =====================================================
+   Print Transcript
+   ===================================================== */
+
+.transcript-header {
+    text-align: center;
+    padding: 2rem 0;
+    border-bottom: 3px double var(--primary);
+    margin-bottom: 2rem;
+}
+
+.transcript-header h1 {
+    font-size: 1.5rem;
+    color: var(--primary);
+    margin-bottom: 0.5rem;
+}
+
+.transcript-header .dept-name {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+}
+
+.transcript-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+}
+
+.transcript-table th,
+.transcript-table td {
+    border: 1px solid var(--border);
+    padding: 0.75rem;
+    text-align: left;
+}
+
+.transcript-table th {
+    background: var(--secondary);
+    font-weight: 600;
+}
+
+@media print {
+    .transcript-header {
+        padding: 1rem 0;
+    }
+
+    .no-print {
+        display: none !important;
+    }
+
+    .print-only {
+        display: block !important;
+    }
+
+    body {
+        background: white !important;
+    }
+
+    .main-content {
+        background: white !important;
+    }
+}
+
+.print-only {
+    display: none;
+}
+
+/* =====================================================
+   Enhanced Table Hover
+   ===================================================== */
+
+.table tbody tr {
+    transition: background-color 0.15s ease, transform 0.15s ease;
+}
+
+.table tbody tr:hover {
+    background: linear-gradient(90deg, rgba(26, 54, 93, 0.05), transparent);
+}
+
+/* =====================================================
+   Input Focus Glow
+   ===================================================== */
+
+.form-control:focus,
+input:focus,
+select:focus,
+textarea:focus {
+    box-shadow: 0 0 0 3px rgba(26, 54, 93, 0.15);
+}
+
+/* =====================================================
+   Card Glassmorphism Enhancement
+   ===================================================== */
+
+.card-glass {
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* =====================================================
+   Skeleton Loading
+   ===================================================== */
+
+.skeleton {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.5s infinite;
+    border-radius: 4px;
+}
+
+.skeleton-text {
+    height: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.skeleton-title {
+    height: 1.5rem;
+    width: 60%;
+    margin-bottom: 1rem;
+}
+
+.skeleton-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+}
+
+@keyframes skeleton-loading {
+    0% {
+        background-position: 200% 0;
+    }
+
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+/* =====================================================
+   Real-time Clock
+   ===================================================== */
+
+.navbar-clock {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.8);
+    font-family: 'Courier New', monospace;
+    padding: 0.25rem 0.75rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    margin-right: 1rem;
+}

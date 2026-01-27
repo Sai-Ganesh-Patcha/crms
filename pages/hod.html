@@ -186,6 +186,14 @@
         </div>
     </div>
 
+    <!-- Footer -->
+    <footer class="app-footer no-print">
+        <div class="footer-content">
+            <div class="footer-left">🎓 College Result Management System</div>
+            <div class="footer-right">Department of Computer Science & Data Science | v2.0</div>
+        </div>
+    </footer>
+
     <!-- Faculty Feedback Modal -->
     <div class="modal-overlay" id="feedbackModal">
         <div class="modal">
@@ -194,6 +202,17 @@
                 <button class="modal-close" onclick="closeModal('feedbackModal')">&times;</button>
             </div>
             <div class="modal-body" id="feedbackContent"></div>
+        </div>
+    </div>
+
+    <!-- Student View Modal -->
+    <div class="modal-overlay" id="studentModal">
+        <div class="modal" style="max-width:800px">
+            <div class="modal-header">
+                <h3>Student Details</h3>
+                <button class="modal-close" onclick="closeModal('studentModal')">&times;</button>
+            </div>
+            <div class="modal-body" id="studentModalContent"></div>
         </div>
     </div>
 
@@ -233,6 +252,7 @@
     <script src="../js/data.js"></script>
     <script src="../js/security.js"></script>
     <script src="../js/auth.js"></script>
+    <script src="../js/ui.js"></script>
     <script>
         // Check authentication
         if (!Auth.requireAuth(['hod', 'admin'])) {
@@ -355,6 +375,7 @@
                     <td><strong>${s.cgpa.toFixed(2)}</strong></td>
                     <td><span class="badge ${perf.class}" style="background:none">${perf.text}</span></td>
                     <td>
+                        <button class="btn btn-sm btn-primary" onclick="viewStudent('${s.regno}')">View</button>
                         <button class="btn btn-sm btn-secondary" onclick="editStudent('${s.regno}')">Edit</button>
                         <button class="btn btn-sm ${isSuspended ? 'btn-success' : 'btn-danger'}" onclick="toggleSuspend('${s.regno}')">${isSuspended ? 'Restore' : 'Suspend'}</button>
                     </td>
@@ -399,6 +420,72 @@
             addLog(action ? 'SUSPEND' : 'RESTORE', `${action ? 'Suspended' : 'Restored'} student: ${regno}`, user.name);
             alert(`Student ${action ? 'suspended' : 'restored'} successfully!`);
             location.reload();
+        }
+
+        function viewStudent(regno) {
+            const student = getStudentByRegno(regno);
+            const cgpa = parseFloat(calculateCGPA(student));
+            const perf = getPerformanceStatus(cgpa);
+
+            let html = `
+                <div class="flex gap-2 mb-2">
+                    <div class="faculty-avatar" style="width:60px;height:60px">${student.name.charAt(0)}</div>
+                    <div>
+                        <h3 style="margin:0">${student.name}</h3>
+                        <p class="text-muted" style="margin:0">${student.regno} • ${student.gender === 'F' ? 'Female' : 'Male'}</p>
+                        <span class="performance-badge ${perf.class}" style="margin-top:0.5rem;display:inline-block">CGPA: ${cgpa.toFixed(2)} - ${perf.text}</span>
+                    </div>
+                </div>
+                <hr style="margin:1rem 0">
+                <h4>Semester Results</h4>
+                <p class="text-muted" style="font-size:0.875rem">Click on a semester to view subject details</p>`;
+
+            const semNames = { sem1: 'Semester 1', sem2: 'Semester 2', sem3: 'Semester 3', sem4: 'Semester 4', sem5: 'Semester 5', sem6: 'Semester 6', sem7: 'Semester 7', sem8: 'Semester 8' };
+
+            Object.entries(student.semesters || {}).forEach(([key, sem]) => {
+                const semId = `hod-sem-details-${key}`;
+                let subjectRows = '';
+                Object.entries(sem.subjects || {}).forEach(([subj, grade]) => {
+                    const gradeClass = grade === 'F' ? 'danger' : (grade === 'S' || grade === 'A' ? 'success' : 'primary');
+                    subjectRows += `<tr>
+                        <td>${CRMS_DATA.subjectNames[subj] || subj}</td>
+                        <td class="text-center"><span class="badge badge-${gradeClass}">${grade}</span></td>
+                    </tr>`;
+                });
+
+                html += `<div class="card mb-1" style="cursor:pointer" onclick="toggleSemesterDetails('${semId}', this)">
+                    <div class="card-body" style="display:flex;justify-content:space-between;align-items:center">
+                        <div>
+                            <strong>${semNames[key] || key}</strong> - 
+                            <span class="badge badge-${sem.status === 'PASS' ? 'success' : 'danger'}">${sem.status}</span>
+                            &nbsp; SGPA: <strong>${sem.sgpa && !isNaN(sem.sgpa) ? sem.sgpa.toFixed(2) : 'N/A'}</strong>
+                        </div>
+                        <span class="expand-icon" style="font-size:1.2rem;transition:transform 0.2s">▶</span>
+                    </div>
+                    <div id="${semId}" class="sem-details" style="display:none;padding:0 1rem 1rem;border-top:1px solid #e2e8f0">
+                        <table class="table" style="margin-top:0.75rem">
+                            <thead><tr><th>Subject</th><th class="text-center">Grade</th></tr></thead>
+                            <tbody>${subjectRows || '<tr><td colspan="2" class="text-center text-muted">No subjects found</td></tr>'}</tbody>
+                        </table>
+                    </div>
+                </div>`;
+            });
+
+            document.getElementById('studentModalContent').innerHTML = html;
+            document.getElementById('studentModal').classList.add('active');
+        }
+
+        function toggleSemesterDetails(id, cardEl) {
+            event.stopPropagation();
+            const details = document.getElementById(id);
+            const icon = cardEl.querySelector('.expand-icon');
+            if (details.style.display === 'none') {
+                details.style.display = 'block';
+                icon.style.transform = 'rotate(90deg)';
+            } else {
+                details.style.display = 'none';
+                icon.style.transform = 'rotate(0deg)';
+            }
         }
 
         function closeModal(id) {

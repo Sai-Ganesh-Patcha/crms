@@ -8,32 +8,33 @@ const CRMS_DATA = {
         { id: 4, name: "A. Revathi", subject: "Operating Systems", email: "arevathi@college.edu" },
         { id: 5, name: "Dr. V. Venkata Supura", subject: "Software Engineering", email: "vvsupura@college.edu" }
     ],
-    
+
     // Default Users
     users: [
         { username: "admin", password: "admin123", role: "admin", name: "System Administrator" },
+        { username: "operator", password: "operator123", role: "operator", name: "Academic Operator" },
         { username: "hod", password: "hod123", role: "hod", name: "Dr. K. S. N. Prasad" },
         { username: "faculty1", password: "faculty123", role: "faculty", name: "K. Viswa Prasad", facultyId: 2 },
         { username: "faculty2", password: "faculty123", role: "faculty", name: "S. V. V. D. Venu Gopal", facultyId: 3 },
         { username: "faculty3", password: "faculty123", role: "faculty", name: "A. Revathi", facultyId: 4 },
         { username: "faculty4", password: "faculty123", role: "faculty", name: "Dr. V. Venkata Supura", facultyId: 5 }
     ],
-    
+
     // Grade Points
     gradePoints: { "S": 10, "A": 9, "B": 8, "C": 7, "D": 6, "E": 5, "F": 0 },
-    
+
     // Subject Full Names
     subjectNames: {
-        "CE": "Communication English", "LA&C": "Linear Algebra & Calculus", "CHEM": "Chemistry",
+        "CE": "Communicative English", "LA&C": "Linear Algebra & Calculus", "CHEM": "Chemistry",
         "BCME": "Basic Civil & Mechanical Engg", "IP": "Introduction to Programming", "CE_LAB": "CE Lab",
-        "CHEM_LAB": "Chemistry Lab", "C_LAB": "C Programming Lab", "EWS": "English Writing Skills", "SPORTS": "Sports",
+        "CHEM_LAB": "Chemistry Lab", "C_LAB": "C Programming Lab", "EWS": "Communicative English Lab", "SPORTS": "Sports",
         "DEVC": "Differential Equations & Vector Calculus", "EP": "Engineering Physics", "BEEE": "Basic EEE",
         "EG": "Engineering Graphics", "DS": "Data Structures", "EP_LAB": "Physics Lab", "ITWS": "IT Workshop",
         "BEEE_LAB": "BEEE Lab", "DS_LAB": "DS Lab", "NCC/NSS": "NCC/NSS",
-        "DMGT": "Discrete Maths & Graph Theory", "UHV": "Universal Human Values", "IDS": "Intro to Data Science",
+        "DMGT": "Discrete Maths & Game Theory", "UHV": "Universal Human Values", "IDS": "Intro to Data Science",
         "ADS/AA": "Advanced DS & Algorithm Analysis", "OOPJ": "OOP with Java", "IDS_LAB": "Data Science Lab",
         "OOPJ_LAB": "Java Lab", "PY_LAB": "Python Lab", "ES": "Environmental Science",
-        "OT": "Optimization Techniques", "SMDS": "Statistical Methods for Data Science", "DE": "Digital Electronics",
+        "OT": "Optimization Techniques", "SMDS": "Statistical Methods for Data Science", "DE": "Data Engineering",
         "DBMS": "Database Management Systems", "DLCO": "Digital Logic & Computer Organization",
         "DE_LAB": "DE Lab", "DBMS_LAB": "DBMS Lab", "EDAP_LAB": "EDA with Python Lab", "DTI_LAB": "DTI Lab"
     }
@@ -175,7 +176,7 @@ function getDepartmentStats() {
     const students = getStudents().filter(s => s.name && s.name !== 'NaN');
     const total = students.length;
     let excellent = 0, best = 0, good = 0, average = 0, poor = 0, withBacklogs = 0;
-    
+
     students.forEach(s => {
         const cgpa = parseFloat(calculateCGPA(s));
         if (cgpa >= 9) excellent++;
@@ -183,10 +184,10 @@ function getDepartmentStats() {
         else if (cgpa >= 7) good++;
         else if (cgpa >= 6) average++;
         else if (cgpa > 0) poor++;
-        
+
         if (getBacklogsByStudent(s.regno).length > 0) withBacklogs++;
     });
-    
+
     return { total, excellent, best, good, average, poor, withBacklogs };
 }
 

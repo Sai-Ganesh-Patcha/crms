@@ -34,6 +34,157 @@ const STUDENT_DATA_PART1 = [
     { "regno": "23K61A4432", "name": "Kunuku Swathi Tanuja", "gender": "F", "phone": "", "email": "", "semesters": { "sem1": { "subjects": { "CE": "A", "LA&C": "B", "CHEM": "E", "BCME": "C", "IP": "D", "CE_LAB": "A", "CHEM_LAB": "A", "C_LAB": "A", "EWS": "A", "SPORTS": "B" }, "status": "PASS", "sgpa": 7.44, "credits": 19.5 }, "sem2": { "subjects": { "DEVC": "B", "EP": "B", "BEEE": "C", "EG": "S", "DS": "D", "EP_LAB": "A", "ITWS": "A", "BEEE_LAB": "B", "DS_LAB": "B", "NCC/NSS": "S" }, "status": "PASS", "sgpa": 8.0, "credits": 20.5 }, "sem3": { "subjects": { "DMGT": "S", "UHV": "B", "IDS": "C", "ADS/AA": "B", "OOPJ": "D", "IDS_LAB": "A", "OOPJ_LAB": "A", "PY_LAB": "A", "ES": "S" }, "status": "PASS", "sgpa": 8.1, "credits": 20.0 }, "sem4": { "subjects": { "OT": "A", "SMDS": "A", "DE": "B", "DBMS": "D", "DLCO": "B", "DE_LAB": "S", "DBMS_LAB": "A", "EDAP_LAB": "A", "DTI_LAB": "S" }, "status": "PASS", "sgpa": 8.45, "credits": 21.0 } } },
     { "regno": "23K61A4433", "name": "Madireddy Venkata Sai Narasimha Naidu", "gender": "M", "phone": "", "email": "", "semesters": { "sem1": { "subjects": { "CE": "B", "LA&C": "A", "CHEM": "C", "BCME": "A", "IP": "C", "CE_LAB": "A", "CHEM_LAB": "A", "C_LAB": "S", "EWS": "S", "SPORTS": "B" }, "status": "PASS", "sgpa": 8.41, "credits": 19.5 }, "sem2": { "subjects": { "DEVC": "S", "EP": "B", "BEEE": "B", "EG": "B", "DS": "D", "EP_LAB": "A", "ITWS": "B", "BEEE_LAB": "A", "DS_LAB": "C", "NCC/NSS": "A" }, "status": "PASS", "sgpa": 8.07, "credits": 20.5 }, "sem3": { "subjects": { "DMGT": "B", "UHV": "B", "IDS": "C", "ADS/AA": "B", "OOPJ": "D", "IDS_LAB": "S", "OOPJ_LAB": "B", "PY_LAB": "B", "ES": "S" }, "status": "PASS", "sgpa": 7.7, "credits": 20.0 }, "sem4": { "subjects": { "OT": "A", "SMDS": "B", "DE": "A", "DBMS": "C", "DLCO": "B", "DE_LAB": "S", "DBMS_LAB": "S", "EDAP_LAB": "S", "DTI_LAB": "S" }, "status": "PASS", "sgpa": 8.76, "credits": 21.0 } } },
     { "regno": "23K61A4434", "name": "Mane Nikhitha", "gender": "F", "phone": "", "email": "", "semesters": { "sem1": { "subjects": { "CE": "B", "LA&C": "C", "CHEM": "D", "BCME": "C", "IP": "D", "CE_LAB": "A", "CHEM_LAB": "A", "C_LAB": "S", "EWS": "A", "SPORTS": "B" }, "status": "PASS", "sgpa": 7.41, "credits": 19.5 }, "sem2": { "subjects": { "DEVC": "C", "EP": "D", "BEEE": "B", "EG": "B", "DS": "C", "EP_LAB": "A", "ITWS": "A", "BEEE_LAB": "S", "DS_LAB": "B", "NCC/NSS": "A" }, "status": "PASS", "sgpa": 7.68, "credits": 20.5 }, "sem3": { "subjects": { "DMGT": "C", "UHV": "A", "IDS": "B", "ADS/AA": "C", "OOPJ": "B", "IDS_LAB": "S", "OOPJ_LAB": "A", "PY_LAB": "A", "ES": "S" }, "status": "PASS", "sgpa": 8.0, "credits": 20.0 }, "sem4": { "subjects": { "OT": "A", "SMDS": "A", "DE": "A", "DBMS": "D", "DLCO": "B", "DE_LAB": "S", "DBMS_LAB": "S", "EDAP_LAB": "S", "DTI_LAB": "S" }, "status": "PASS", "sgpa": 8.76, "credits": 21.0 } } },
-    { "regno": "23K61A4435", "name": "Menthey Manideep Sai", "gender": "M", "phone": "", "email": "", "semesters": { "sem1": { "subjects": { "CE": "D", "LA&C": "F", "CHEM": "E", "BCME": "D", "IP": "F", "CE_LAB": "A", "CHEM_LAB": "B", "C_LAB": "D", "EWS": "S", "SPORTS": "B" }, "status": "FAIL", "sgpa": 0, "credits": 19.5 }, "sem2": { "subjects": { "DEVC": "E", "EP": "E", "BEEE": "D", "EG": "C", "DS": "E", "EP_LAB": "B", "ITWS": "B", "BEEE_LAB": "C", "DS_LAB": "D", "NCC/NSS": "B" }, "status": "PASS", "sgpa": 6.02, "credits": 20.5 }, "sem3": { "subjects": { "DMGT": "D", "UHV": "E", "IDS": "F", "ADS/AA": "F", "OOPJ": "F", "IDS_LAB": "B", "OOPJ_LAB": "D", "PY_LAB": "B", "ES": "B" }, "status": "FAIL", "sgpa": 0, "credits": 20.0 }, "sem4": { "subjects": { "OT": "F", "SMDS": "E", "DE": "E", "DBMS": "F", "DLCO": "E", "DE_LAB": "B", "DBMS_LAB": "D", "EDAP_LAB": "B", "DTI_LAB": "A" }, "status": "FAIL", "sgpa": 0, "credits": 21.0 } } },
-    { "regno": "23K61A4436", "name": "Mokhamatla Bhavani Prasad", "gender": "M", "phone": "", "email": "", "semesters": { "sem1": { "subjects": { "CE": "B", "LA&C": "D", "CHEM": "D", "BCME": "B", "IP": "D", "CE_LAB": "B", "CHEM_LAB": "A", "C_LAB": "B", "EWS": "S", "SPORTS": "B" }, "status": "PASS", "sgpa": 7.28, "credits": 19.5 }, "sem2": { "subjects": { "DEVC": "B", "EP": "C", "BEEE": "B", "EG": "D", "DS": "D", "EP_LAB": "B", "ITWS": "S", "BEEE_LAB": "B", "DS_LAB": "B", "NCC/NSS": "B" }, "status": "PASS", "sgpa": 7.37, "credits": 20.5 }, "sem3": { "subjects": { "DMGT": "B", "UHV": "A", "IDS": "B", "ADS/AA": "B", "OOPJ": "C", "IDS_LAB": "S", "OOPJ_LAB": "A", "PY_LAB": "A", "ES": "S" }, "status": "PASS", "sgpa": 8.3, "credits": 20.0 }, "sem4": { "subjects": { "OT": "B", "SMDS": "B", "DE": "A", "DBMS": "C", "DLCO": "C", "DE_LAB": "S", "DBMS_LAB": "S", "EDAP_LAB": "S", "DTI_LAB": "S" }, "status": "PASS", "sgpa": 8.52, "credits": 21.0 } } }
+    {
+        "regno": "23K61A4435",
+        "name": "Menthey Manideep Sai",
+        "gender": "M",
+        "phone": "",
+        "email": "",
+        "semesters": {
+            "sem1": {
+                "subjects": {
+                    "CE": "D",
+                    "LA&C": "F",
+                    "CHEM": "E",
+                    "BCME": "D",
+                    "IP": "F",
+                    "CE_LAB": "A",
+                    "CHEM_LAB": "B",
+                    "C_LAB": "D",
+                    "EWS": "S",
+                    "SPORTS": "B"
+                },
+                "status": "FAIL",
+                "sgpa": 0,
+                "credits": 19.5
+            },
+            "sem2": {
+                "subjects": {
+                    "DEVC": "E",
+                    "EP": "E",
+                    "BEEE": "D",
+                    "EG": "C",
+                    "DS": "E",
+                    "EP_LAB": "B",
+                    "ITWS": "B",
+                    "BEEE_LAB": "C",
+                    "DS_LAB": "D",
+                    "NCC/NSS": "B"
+                },
+                "status": "PASS",
+                "sgpa": 6.02,
+                "credits": 20.5
+            },
+            "sem3": {
+                "subjects": {
+                    "DMGT": "D",
+                    "UHV": "E",
+                    "IDS": "F",
+                    "ADS/AA": "F",
+                    "OOPJ": "F",
+                    "IDS_LAB": "B",
+                    "OOPJ_LAB": "D",
+                    "PY_LAB": "B",
+                    "ES": "B"
+                },
+                "status": "FAIL",
+                "sgpa": 0,
+                "credits": 20.0
+            },
+            "sem4": {
+                "subjects": {
+                    "OT": "F",
+                    "SMDS": "E",
+                    "DE": "E",
+                    "DBMS": "F",
+                    "DLCO": "E",
+                    "DE_LAB": "B",
+                    "DBMS_LAB": "D",
+                    "EDAP_LAB": "B",
+                    "DTI_LAB": "A"
+                },
+                "status": "FAIL",
+                "sgpa": 0,
+                "credits": 21.0
+            }
+        }
+    },
+
+    {
+        "regno": "23K61A4436",
+        "name": "Mokhamatla Bhavani Prasad",
+        "gender": "M",
+        "phone": "",
+        "email": "",
+        "semesters": {
+            "sem1": {
+                "subjects": {
+                    "CE": "B",
+                    "LA&C": "D",
+                    "CHEM": "D",
+                    "BCME": "B",
+                    "IP": "D",
+                    "CE_LAB": "B",
+                    "CHEM_LAB": "A",
+                    "C_LAB": "B",
+                    "EWS": "S",
+                    "SPORTS": "B"
+                },
+                "status": "PASS",
+                "sgpa": 7.28,
+                "credits": 19.5
+            },
+            "sem2": {
+                "subjects": {
+                    "DEVC": "B",
+                    "EP": "C",
+                    "BEEE": "B",
+                    "EG": "D",
+                    "DS": "D",
+                    "EP_LAB": "B",
+                    "ITWS": "S",
+                    "BEEE_LAB": "B",
+                    "DS_LAB": "B",
+                    "NCC/NSS": "B"
+                },
+                "status": "PASS",
+                "sgpa": 7.37,
+                "credits": 20.5
+            },
+            "sem3": {
+                "subjects": {
+                    "DMGT": "B",
+                    "UHV": "A",
+                    "IDS": "B",
+                    "ADS/AA": "B",
+                    "OOPJ": "C",
+                    "IDS_LAB": "S",
+                    "OOPJ_LAB": "A",
+                    "PY_LAB": "A",
+                    "ES": "S"
+                },
+                "status": "PASS",
+                "sgpa": 8.3,
+                "credits": 20.0
+            },
+            "sem4": {
+                "subjects": {
+                    "OT": "B",
+                    "SMDS": "B",
+                    "DE": "A",
+                    "DBMS": "C",
+                    "DLCO": "C",
+                    "DE_LAB": "S",
+                    "DBMS_LAB": "S",
+                    "EDAP_LAB": "S",
+                    "DTI_LAB": "S"
+                },
+                "status": "PASS",
+                "sgpa": 8.52,
+                "credits": 21.0
+            }
+        }
+    }
+
+
 ];

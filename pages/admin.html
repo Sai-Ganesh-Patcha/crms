@@ -213,6 +213,14 @@
         </div>
     </div>
 
+    <!-- Footer -->
+    <footer class="app-footer no-print">
+        <div class="footer-content">
+            <div class="footer-left">🎓 College Result Management System</div>
+            <div class="footer-right">Department of Computer Science & Data Science | v2.0</div>
+        </div>
+    </footer>
+
     <!-- Add/Edit User Modal -->
     <div class="modal-overlay" id="userModal">
         <div class="modal">
@@ -294,6 +302,7 @@
     <script src="../js/data.js"></script>
     <script src="../js/security.js"></script>
     <script src="../js/auth.js"></script>
+    <script src="../js/ui.js"></script>
     <script>
         if (!Auth.requireAuth('admin')) { throw new Error('Access denied'); }
         initializeData();

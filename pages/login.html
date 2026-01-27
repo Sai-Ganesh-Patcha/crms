@@ -143,6 +143,115 @@
             font-size: 0.85rem;
             color: #64748b;
         }
+
+        /* Loading Animation */
+        .btn-login.loading {
+            pointer-events: none;
+            opacity: 0.8;
+        }
+
+        .btn-login.loading::before {
+            content: '';
+            width: 18px;
+            height: 18px;
+            border: 2px solid transparent;
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Shake Animation */
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            10%,
+            30%,
+            50%,
+            70%,
+            90% {
+                transform: translateX(-5px);
+            }
+
+            20%,
+            40%,
+            60%,
+            80% {
+                transform: translateX(5px);
+            }
+        }
+
+        .shake {
+            animation: shake 0.5s ease-in-out;
+        }
+
+        /* Success Checkmark */
+        .success-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(13, 148, 136, 0.95);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .success-check {
+            font-size: 5rem;
+            margin-bottom: 1rem;
+            animation: scaleIn 0.4s ease;
+        }
+
+        .success-text {
+            color: white;
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes scaleIn {
+            from {
+                transform: scale(0);
+            }
+
+            to {
+                transform: scale(1);
+            }
+        }
+
+        /* Version Badge */
+        .version-badge {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.75rem;
+            color: #94a3b8;
+        }
     </style>
 </head>
 
@@ -182,6 +291,7 @@
                     <option value="student">Student</option>
                     <option value="faculty">Faculty</option>
                     <option value="hod">HOD</option>
+                    <option value="operator">Operator (Data Entry)</option>
                     <option value="admin">Admin</option>
                 </select>
             </div>
@@ -201,6 +311,8 @@
         </div>
 
     </div>
+
+    <div class="version-badge">CRMS v2.0 | CSD Department</div>
 
     <script src="../js/students1.js"></script>
     <script src="../js/students2.js"></script>
@@ -243,21 +355,37 @@
             document.getElementById("errorMsg").style.display = "none";
 
             const result = Auth.login(usernameVal, passwordVal, selectedRole);
+            const loginBtn = document.querySelector('.btn-login');
 
             if (result.success) {
-                // Check if first-login password change required
-                if (result.requiresPasswordChange && result.user.role === 'student') {
-                    // Set flag in sessionStorage so change-password page knows to redirect to dashboard
-                    sessionStorage.setItem('requiresPasswordChange', 'true');
-                    alert('Welcome! For security, please change your password on first login.');
-                    window.location.href = 'change-password.html';
-                } else {
-                    window.location.href = result.user.role + '.html';
-                }
+                // Show success animation
+                const successOverlay = document.createElement('div');
+                successOverlay.className = 'success-overlay';
+                successOverlay.innerHTML = `
+                    <div class="success-check">✓</div>
+                    <div class="success-text">Welcome, ${result.user.name}!</div>
+                `;
+                document.body.appendChild(successOverlay);
+
+                setTimeout(() => {
+                    // Check if first-login password change required
+                    if (result.requiresPasswordChange && result.user.role === 'student') {
+                        sessionStorage.setItem('requiresPasswordChange', 'true');
+                        window.location.href = 'change-password.html';
+                    } else {
+                        window.location.href = result.user.role + '.html';
+                    }
+                }, 1000);
             } else {
+                loginBtn.classList.remove('loading');
                 const errorMsg = document.getElementById("errorMsg");
                 errorMsg.textContent = result.error || "Invalid username or password";
                 errorMsg.style.display = "block";
+
+                // Shake animation
+                const wrapper = document.querySelector('.login-wrapper');
+                wrapper.classList.add('shake');
+                setTimeout(() => wrapper.classList.remove('shake'), 500);
             }
         });
     </script>

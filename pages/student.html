@@ -96,7 +96,8 @@
         <div class="navbar-brand">🎓 CRMS - Student Portal</div>
         <div class="nav-user">
             <span id="userName">Student</span>
-            <button class="btn btn-sm btn-secondary" onclick="Auth.logout()">Logout</button>
+            <a href="change-password.html" class="btn btn-sm btn-secondary">Change Password</a>
+            <button class="btn btn-sm btn-danger" onclick="Auth.logout()">Logout</button>
         </div>
     </nav>
 
@@ -172,13 +173,28 @@
             </div>
         </div>
 
-        <!-- Faculty Feedback Button -->
-        <div class="text-center mt-3">
-            <a href="student-feedback.html" class="btn btn-primary btn-lg">
+        <!-- Action Buttons -->
+        <div class="flex justify-center gap-2 mt-3 no-print">
+            <button class="btn btn-primary btn-lg" onclick="printTranscript()">
+                🖨️ Print Transcript
+            </button>
+            <a href="student-feedback.html" class="btn btn-success btn-lg">
                 ✍️ Submit Faculty Feedback
             </a>
         </div>
     </div>
+
+    <!-- Footer -->
+    <footer class="app-footer no-print">
+        <div class="footer-content">
+            <div class="footer-left">
+                🎓 College Result Management System
+            </div>
+            <div class="footer-right">
+                Department of Computer Science & Data Science | v2.0
+            </div>
+        </div>
+    </footer>
 
     <!-- Semester Modal -->
     <div class="modal-overlay" id="semesterModal">
@@ -198,6 +214,7 @@
     <script src="../js/data.js"></script>
     <script src="../js/security.js"></script>
     <script src="../js/auth.js"></script>
+    <script src="../js/ui.js"></script>
     <script>
         // Protect page
         if (!Auth.requireAuth('student')) { throw new Error('Access denied'); }
@@ -313,6 +330,97 @@
         document.getElementById('semesterModal').addEventListener('click', function (e) {
             if (e.target === this) closeModal();
         });
+
+        // Print Transcript Function
+        function printTranscript() {
+            const semNames = { sem1: 'Semester 1', sem2: 'Semester 2', sem3: 'Semester 3', sem4: 'Semester 4', sem5: 'Semester 5', sem6: 'Semester 6', sem7: 'Semester 7', sem8: 'Semester 8' };
+
+            let transcriptHTML = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Academic Transcript - ${student.name}</title>
+                    <style>
+                        * { margin: 0; padding: 0; box-sizing: border-box; }
+                        body { font-family: 'Segoe UI', Arial, sans-serif; padding: 40px; color: #1a202c; }
+                        .header { text-align: center; border-bottom: 3px double #1a365d; padding-bottom: 20px; margin-bottom: 30px; }
+                        .header h1 { color: #1a365d; font-size: 24px; margin-bottom: 5px; }
+                        .header .dept { color: #4a5568; font-size: 14px; }
+                        .header .title { color: #1a365d; font-size: 18px; margin-top: 15px; font-weight: 600; }
+                        .student-info { display: flex; justify-content: space-between; margin-bottom: 25px; padding: 15px; background: #f7fafc; border-radius: 8px; }
+                        .info-item { }
+                        .info-label { color: #718096; font-size: 12px; }
+                        .info-value { font-weight: 600; font-size: 14px; }
+                        .cgpa-box { text-align: center; padding: 15px 30px; background: linear-gradient(135deg, #1a365d, #2c5282); color: white; border-radius: 8px; }
+                        .cgpa-value { font-size: 28px; font-weight: 700; }
+                        .cgpa-label { font-size: 12px; opacity: 0.9; }
+                        .semester { margin-bottom: 25px; }
+                        .semester-header { background: #1a365d; color: white; padding: 10px 15px; border-radius: 6px 6px 0 0; display: flex; justify-content: space-between; }
+                        table { width: 100%; border-collapse: collapse; }
+                        th, td { padding: 10px 15px; text-align: left; border: 1px solid #e2e8f0; }
+                        th { background: #f7fafc; font-weight: 600; }
+                        .grade { font-weight: 600; padding: 2px 10px; border-radius: 4px; }
+                        .grade-s, .grade-a { background: #c6f6d5; color: #22543d; }
+                        .grade-b, .grade-c { background: #bee3f8; color: #2a4365; }
+                        .grade-d, .grade-e { background: #feebc8; color: #744210; }
+                        .grade-f { background: #fed7d7; color: #742a2a; }
+                        .footer { margin-top: 40px; text-align: center; color: #718096; font-size: 12px; border-top: 1px solid #e2e8f0; padding-top: 20px; }
+                        @media print { body { padding: 20px; } }
+                    </style>
+                </head>
+                <body>
+                    <div class="header">
+                        <h1>🎓 College Result Management System</h1>
+                        <div class="dept">Department of Computer Science & Data Science</div>
+                        <div class="title">ACADEMIC TRANSCRIPT</div>
+                    </div>
+                    
+                    <div class="student-info">
+                        <div>
+                            <div class="info-item"><span class="info-label">Registration No:</span> <span class="info-value">${student.regno}</span></div>
+                            <div class="info-item"><span class="info-label">Name:</span> <span class="info-value">${student.name}</span></div>
+                            <div class="info-item"><span class="info-label">Gender:</span> <span class="info-value">${student.gender === 'F' ? 'Female' : 'Male'}</span></div>
+                        </div>
+                        <div class="cgpa-box">
+                            <div class="cgpa-value">${cgpa.toFixed(2)}</div>
+                            <div class="cgpa-label">CGPA</div>
+                        </div>
+                    </div>
+            `;
+
+            Object.entries(student.semesters || {}).forEach(([key, sem]) => {
+                transcriptHTML += `
+                    <div class="semester">
+                        <div class="semester-header">
+                            <span>${semNames[key] || key}</span>
+                            <span>SGPA: ${sem.sgpa && !isNaN(sem.sgpa) ? sem.sgpa.toFixed(2) : 'N/A'} | Credits: ${sem.credits || 'N/A'} | Status: ${sem.status}</span>
+                        </div>
+                        <table>
+                            <thead><tr><th>Subject Code</th><th>Subject Name</th><th>Grade</th></tr></thead>
+                            <tbody>
+                `;
+                Object.entries(sem.subjects || {}).forEach(([subj, grade]) => {
+                    const gradeClass = grade === 'F' ? 'f' : (grade === 'S' || grade === 'A' ? 's' : (grade === 'B' || grade === 'C' ? 'b' : 'd'));
+                    transcriptHTML += `<tr><td>${subj}</td><td>${CRMS_DATA.subjectNames[subj] || subj}</td><td><span class="grade grade-${gradeClass}">${grade}</span></td></tr>`;
+                });
+                transcriptHTML += `</tbody></table></div>`;
+            });
+
+            transcriptHTML += `
+                    <div class="footer">
+                        <p>This is a computer-generated transcript. Generated on ${new Date().toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                        <p>© College Result Management System | Department of CSD</p>
+                    </div>
+                </body>
+                </html>
+            `;
+
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(transcriptHTML);
+            printWindow.document.close();
+            printWindow.focus();
+            setTimeout(() => printWindow.print(), 500);
+        }
     </script>
 </body>
 
