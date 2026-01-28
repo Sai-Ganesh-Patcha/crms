@@ -116,7 +116,7 @@ const server = app.listen(PORT, () => {
 ║                                                       ║
 ╚═══════════════════════════════════════════════════════╝
     `);
-    console.log('🚀 SYSTEM UPDATE: Magic Seed Route is Active at /api/system/trigger-seed-db-secure-key-123');
+    console.log('🚀 SYSTEM UPDATE v2: Emergency Admin Tool is Active at /api/system/trigger-seed-db-secure-key-123');
 });
 
 // Graceful shutdown
