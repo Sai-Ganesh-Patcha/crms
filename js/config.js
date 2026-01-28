@@ -6,7 +6,7 @@
 const Config = {
     // API Base URL Configuration
     // PRODUCTION: Update this after deploying backend to Render
-    PRODUCTION_API_URL: 'https://crms-backend.onrender.com/api',  // ← UPDATE THIS with your actual backend URL
+    PRODUCTION_API_URL: 'https://crms-2.onrender.com/api',  // ← UPDATE THIS with your actual backend URL
 
     // Development API URL
     DEVELOPMENT_API_URL: 'http://localhost:5000/api',
