@@ -9,7 +9,7 @@ const Config = {
     PRODUCTION_API_URL: 'https://crms-2.onrender.com/api',  // ← UPDATE THIS with your actual backend URL
 
     // Development API URL
-    DEVELOPMENT_API_URL: 'http://localhost:5000/api',
+    DEVELOPMENT_API_URL: 'https://crms-2.onrender.com',
 
     // Auto-detect environment and use appropriate URL
     get API_BASE_URL() {
