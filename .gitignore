@@ -87,6 +87,10 @@ dist
 # IDE
 .vscode/
 .idea/
+
+# Student data (populated locally)
+server/src/data/studentData.js
+
 *.swp
 *.swo
 *~

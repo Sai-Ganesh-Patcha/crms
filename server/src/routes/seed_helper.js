@@ -43,4 +43,31 @@ router.get('/trigger-seed-db-secure-key-123', async (req, res) => {
     }
 });
 
+/**
+ * Seed Custom Student Data
+ * URL: /api/system/seed-students-secure-key-456
+ */
+router.get('/seed-students-secure-key-456', async (req, res) => {
+    try {
+        console.log('📚 Student data seeding triggered...');
+
+        const seedStudents = require('../scripts/seedStudents');
+        const result = await seedStudents();
+
+        res.json({
+            success: true,
+            message: 'Student data seeded successfully',
+            data: result
+        });
+
+    } catch (error) {
+        console.error('❌ Student seeding error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Student seeding failed',
+            error: error.message
+        });
+    }
+});
+
 module.exports = router;
