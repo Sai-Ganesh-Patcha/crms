@@ -7,7 +7,7 @@
 
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
-const config = require('../../public/config/constants');
+const config = require('../config/constants');
 
 const userSchema = new mongoose.Schema({
     username: {

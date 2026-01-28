@@ -6,7 +6,7 @@
  */
 
 const jwt = require('jsonwebtoken');
-const config = require('../../public/config/constants');
+const config = require('../config/constants');
 const { User, AuditLog } = require('../models');
 
 /**

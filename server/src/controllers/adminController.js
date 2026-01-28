@@ -4,7 +4,7 @@
  */
 
 const { User, Student, Marks, Result, AuditLog } = require('../models');
-const config = require('../../public/config/constants');
+const config = require('../config/constants');
 
 /**
  * Publish results for a semester

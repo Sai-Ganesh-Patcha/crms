@@ -6,7 +6,7 @@
  */
 
 const { User, Student, Department, Subject, Regulation, Marks, Result, AuditLog } = require('../models');
-const config = require('../../public/config/constants');
+const config = require('../config/constants');
 const gpaService = require('../services/gpaService');
 
 // ======================

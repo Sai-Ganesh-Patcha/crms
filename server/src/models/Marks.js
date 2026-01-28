@@ -6,7 +6,7 @@
  */
 
 const mongoose = require('mongoose');
-const config = require('../../public/config/constants');
+const config = require('../config/constants');
 
 const marksSchema = new mongoose.Schema({
     studentId: {
