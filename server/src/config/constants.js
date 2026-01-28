@@ -18,5 +18,20 @@ module.exports = {
     upload: {
         maxSize: 5 * 1024 * 1024, // 5MB
         allowedTypes: ['image/jpeg', 'image/png', 'application/pdf']
+    },
+    resultStatus: {
+        DRAFT: 'DRAFT',
+        LOCKED: 'LOCKED',
+        VERIFIED: 'VERIFIED',
+        PUBLISHED: 'PUBLISHED'
+    },
+    gradeScale: {
+        S: { minMarks: 90, points: 10 },
+        A: { minMarks: 80, points: 9 },
+        B: { minMarks: 70, points: 8 },
+        C: { minMarks: 60, points: 7 },
+        D: { minMarks: 50, points: 6 },
+        E: { minMarks: 40, points: 5 },
+        F: { minMarks: 0, points: 0 }
     }
 };
